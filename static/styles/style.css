@@ -1,0 +1,25 @@
+
+body {
+    background-color: rgb(0, 0, 0);
+}
+
+.logo{
+    font-size:60px;
+    font-weight:bold;
+    color:#000000;
+    text-shadow:0 0 10px #351313;
+    margin-bottom:15px;
+}
+
+.logo{
+    font-size:80px;
+    margin-bottom:10px;
+    
+}
+
+@keyframes spin{
+    0%{transform:rotate(-10deg);}
+    50%{transform:rotate(10deg);}
+    100%{transform:rotate(-10deg);}
+}
+
