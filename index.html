@@ -1,130 +1,164 @@
-<!doctype html>
-<html lang="en">
-
+<!DOCTYPE html>
+<html lang="ru">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>2 NEEK</title>
-    <link rel="stylesheet" href="static/styles/style.css">
-    <head>
-    <meta charset="UTF-8">
-    <title>2 NEEK</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Вопрос</title>
 
-    <link rel="icon"
-    href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22></text></svg>">
-</head>
-    <div class="logo">
-    2 NEEK 
-</div>
-
-
-</head>
-
-<body>
-    <style>
-body{
+<style>
+*{
     margin:0;
-    height:100vh;
-    background:linear-gradient(135deg,#667eea,#764ba2);
-    overflow:hidden;
-    font-family:Arial,sans-serif;
+    padding:0;
+    box-sizing:border-box;
+    font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",sans-serif;
 }
 
-#box{
-    position:absolute;
-    left:50%;
-    top:50%;
-    transform:translate(-50%,-50%);
+body{
+    height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    background:
+        radial-gradient(circle at top,#6ea8ff 0%,transparent 40%),
+        radial-gradient(circle at bottom,#ffb3d9 0%,transparent 40%),
+        #f5f5f7;
+    overflow:hidden;
+}
+
+.card{
+    width:430px;
+    padding:50px;
+    border-radius:32px;
+    background:rgba(255,255,255,.65);
+    backdrop-filter:blur(30px);
+    -webkit-backdrop-filter:blur(30px);
+    box-shadow:0 30px 80px rgba(0,0,0,.15);
     text-align:center;
-    background:white;
-    padding:30px;
-    border-radius:20px;
-    box-shadow:0 10px 30px rgba(0,0,0,.3);
+    animation:show .8s ease;
+}
+
+@keyframes show{
+    from{
+        opacity:0;
+        transform:translateY(30px);
+    }
+    to{
+        opacity:1;
+        transform:translateY(0);
+    }
 }
 
 h1{
-    margin-bottom:20px;
+    font-size:42px;
+    color:#1d1d1f;
+    margin-bottom:15px;
+}
+
+p{
+    color:#6e6e73;
+    margin-bottom:35px;
+    font-size:18px;
+}
+
+.buttons{
+    display:flex;
+    gap:15px;
+    justify-content:center;
 }
 
 button{
-    padding:12px 30px;
-    margin:10px;
+    flex:1;
     border:none;
-    border-radius:10px;
-    font-size:18px;
-    font-weight:bold;
+    border-radius:18px;
+    padding:16px;
+    font-size:20px;
     cursor:pointer;
+    transition:.25s;
+}
+
+#yes{
+    background:#0071e3;
     color:white;
 }
 
-.yes{
-    background:#28a745;
+#yes:hover{
+    transform:translateY(-3px);
+    box-shadow:0 15px 35px rgba(0,113,227,.35);
 }
 
-.no{
-    background:#dc3545;
+#no{
+    background:#ececec;
+    color:#1d1d1f;
+}
+
+#no:hover{
+    transform:translateY(-3px);
+}
+
+.instagram{
+    position:fixed;
+    right:30px;
+    bottom:30px;
+    text-decoration:none;
+    color:#1d1d1f;
+    background:rgba(255,255,255,.75);
+    backdrop-filter:blur(20px);
+    padding:14px 22px;
+    border-radius:30px;
+    box-shadow:0 10px 30px rgba(0,0,0,.15);
+    transition:.3s;
+}
+
+.instagram:hover{
+    transform:scale(1.05);
 }
 </style>
 </head>
+
 <body>
 
-<div id="box">
-    <div  class="logo"></div>
-    <img src="https://cdn.ruwiki.ru/ruwiki/files/5/53/Garena_Free_Fire_Logo.png" alt="Free Fire Logo" width="200">
+<div class="card">
 
-    <h1>2 NEEK | 3084983467 БОТСКИЙ ГИЛЬДИЯМА?</h1>
+<h1>Рома хыяр? 🤔</h1>
 
-    <button class="yes" onclick="openVideo()">ИЯ</button>
-    <button class="no" onclick="moveQuestion()">ЖОК</button>
+<p>Выберите один из вариантов</p>
+
+<div class="buttons" id="buttons">
+    <button id="yes">Да</button>
+    <button id="no">Нет</button>
 </div>
 
+</div>
+
+<a class="instagram"
+href="https://www.instagram.com/rafet_08_/?__pwa=1#"
+target="_blank">
+📷 Instagram
+</a>
+
 <script>
-function openVideo(){
-    window.open(
-        "https://youtube.com/shorts/bd1kIVMeoqY?si=5arwt5nqdJzEXyIQ",
-        "_blank"
-    );
+
+const yes=document.getElementById("yes");
+const no=document.getElementById("no");
+const buttons=document.getElementById("buttons");
+
+no.onclick=()=>{
+
+    if(buttons.firstElementChild===yes){
+        buttons.insertBefore(no,yes);
+    }else{
+        buttons.insertBefore(yes,no);
+    }
+
 }
 
-function moveQuestion(){
-    let box = document.getElementById("box");
+yes.onclick=()=>{
 
-    let maxX = window.innerWidth - box.offsetWidth;
-    let maxY = window.innerHeight - box.offsetHeight;
+window.open("https://www.youtube.com/watch?v=xJzVUZ3nX9g","_blank");
 
-    let x = Math.random() * maxX;
-    let y = Math.random() * maxY;
-
-    box.style.left = x + "px";
-    box.style.top = y + "px";
-    box.style.transform = "none";
 }
+
 </script>
-    </body>
-    
-    </html>
-    <a href="https://www.tiktok.com/@2_neek_" target="_blank" style="
-  display:inline-block;
-  padding:12px 20px;
-  background:#000;
-  color:#fff;
-  border-radius:10px;
-  text-decoration:none;
-  font-family:Arial;
-  font-weight:bold;
-">
-  🎵 Мой TikTok
-</a>
-<a href="https://www.instagram.com/rafet_08_/?__pwa=1#" target="_blank" style="
-  display:inline-block;
-  padding:12px 20px;
-  background:linear-gradient(45deg,#f09433,#e6683c,#dc2743,#cc2366,#bc1888);
-  color:#fff;
-  border-radius:12px;
-  text-decoration:none;
-  font-family:Arial;
-  font-weight:bold;
-  box-shadow:0 4px 10px rgba(0,0,0,0.3);
-">
-  📸 Instagram Лидер
-</a>
+
+</body>
+</html>
