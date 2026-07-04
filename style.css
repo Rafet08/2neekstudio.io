@@ -1,0 +1,366 @@
+/* ===========================
+   СБРОС СТИЛЕЙ
+=========================== */
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+html,body{
+    width:100%;
+    height:100%;
+    overflow:hidden;
+    font-family:Arial, Helvetica, sans-serif;
+    background:#7ed6ff;
+    user-select:none;
+    touch-action:manipulation;
+}
+
+/* ===========================
+   ВЕРХНИЙ БАННЕР
+=========================== */
+
+#banner{
+    width:100%;
+    height:60px;
+
+    display:flex;
+    justify-content:center;
+    align-items:center;
+
+    background:linear-gradient(90deg,#ff0000,#ff7300,#ff0000);
+
+    color:white;
+
+    font-size:30px;
+    font-weight:bold;
+
+    letter-spacing:2px;
+
+    text-shadow:2px 2px 5px black;
+
+    box-shadow:0 4px 15px rgba(0,0,0,.35);
+
+    z-index:10;
+}
+
+/* ===========================
+   ИГРА
+=========================== */
+
+#game{
+    position:relative;
+
+    width:100vw;
+    height:calc(100vh - 60px);
+
+    overflow:hidden;
+
+    background:linear-gradient(#79d8ff,#b8efff 70%,#dfffff);
+}
+
+/* ===========================
+   СОЛНЦЕ
+=========================== */
+
+#game::before{
+
+    content:"";
+
+    position:absolute;
+
+    top:40px;
+    right:70px;
+
+    width:120px;
+    height:120px;
+
+    border-radius:50%;
+
+    background:#ffe14d;
+
+    box-shadow:
+    0 0 30px yellow,
+    0 0 60px gold,
+    0 0 100px yellow;
+}
+
+/* ===========================
+   ЗЕМЛЯ
+=========================== */
+
+#game::after{
+
+    content:"";
+
+    position:absolute;
+
+    left:0;
+    bottom:0;
+
+    width:100%;
+    height:130px;
+
+    background:linear-gradient(#5dd65d,#2da82d);
+
+    border-top:6px solid #2f7a2f;
+}
+
+/* ===========================
+   ОБЛАКА
+=========================== */
+
+.cloud{
+
+    position:absolute;
+
+    width:120px;
+    height:45px;
+
+    background:white;
+
+    border-radius:50px;
+
+    opacity:.9;
+
+    animation:cloudMove 35s linear infinite;
+}
+
+.cloud::before{
+
+    content:"";
+
+    position:absolute;
+
+    width:55px;
+    height:55px;
+
+    left:15px;
+    top:-20px;
+
+    border-radius:50%;
+
+    background:white;
+}
+
+.cloud::after{
+
+    content:"";
+
+    position:absolute;
+
+    width:65px;
+    height:65px;
+
+    right:15px;
+    top:-28px;
+
+    border-radius:50%;
+
+    background:white;
+}
+
+@keyframes cloudMove{
+
+    from{
+        transform:translateX(110vw);
+    }
+
+    to{
+        transform:translateX(-220px);
+    }
+
+}
+
+/* ===========================
+   ПЕРСОНАЖ
+=========================== */
+
+#player{
+
+    position:absolute;
+
+    left:90px;
+
+    bottom:130px;
+
+    width:80px;
+    height:90px;
+
+    object-fit:contain;
+
+    z-index:5;
+}
+
+/* ===========================
+   КАКТУС
+=========================== */
+
+#cactus{
+
+    position:absolute;
+
+    bottom:130px;
+    right:-80px;
+
+    width:34px;
+    height:95px;
+
+    background:#0e9d32;
+
+    border-radius:8px;
+
+    z-index:4;
+}
+
+/* ветка */
+
+#cactus::before{
+
+    content:"";
+
+    position:absolute;
+
+    left:-16px;
+    top:32px;
+
+    width:18px;
+    height:40px;
+
+    border-radius:8px;
+
+    background:#0e9d32;
+}
+
+/* ветка */
+
+#cactus::after{
+
+    content:"";
+
+    position:absolute;
+
+    right:-16px;
+    top:12px;
+
+    width:18px;
+    height:40px;
+
+    border-radius:8px;
+
+    background:#0e9d32;
+}
+
+/* ===========================
+   СЧЕТ
+=========================== */
+
+#score{
+
+    position:absolute;
+
+    top:20px;
+    right:25px;
+
+    font-size:34px;
+
+    font-weight:bold;
+
+    color:#222;
+
+    background:rgba(255,255,255,.75);
+
+    padding:8px 18px;
+
+    border-radius:15px;
+
+    box-shadow:0 5px 10px rgba(0,0,0,.25);
+}
+
+/* ===========================
+   АДАПТАЦИЯ ДЛЯ ТЕЛЕФОНА
+=========================== */
+
+@media (max-width:768px){
+
+#banner{
+
+    height:50px;
+    font-size:20px;
+}
+
+#game{
+
+    height:calc(100vh - 50px);
+}
+
+#player{
+
+    width:60px;
+    height:70px;
+
+    left:30px;
+
+    bottom:100px;
+}
+
+#cactus{
+
+    width:28px;
+    height:75px;
+
+    bottom:100px;
+}
+
+#game::after{
+
+    height:100px;
+}
+
+#score{
+
+    font-size:24px;
+
+    right:10px;
+    top:10px;
+}
+
+}
+#gameOver{
+
+position:absolute;
+
+left:0;
+top:0;
+
+width:100%;
+height:100%;
+
+display:flex;
+
+justify-content:center;
+align-items:center;
+
+flex-direction:column;
+
+background:rgba(0,0,0,.55);
+
+color:white;
+
+font-size:60px;
+
+font-weight:bold;
+
+text-align:center;
+
+z-index:100;
+}
+
+#gameOver small{
+
+font-size:22px;
+margin-top:20px;
+
+}
