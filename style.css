@@ -1,366 +1,308 @@
-/* ===========================
-   СБРОС СТИЛЕЙ
-=========================== */
-
-*{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
+* {
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
 }
 
-html,body{
-    width:100%;
-    height:100%;
-    overflow:hidden;
-    font-family:Arial, Helvetica, sans-serif;
-    background:#7ed6ff;
-    user-select:none;
-    touch-action:manipulation;
+html, body {
+  margin: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: #000;
+  font-family: Arial, Helvetica, sans-serif;
+  touch-action: none;
 }
 
-/* ===========================
-   ВЕРХНИЙ БАННЕР
-=========================== */
-
-#banner{
-    width:100%;
-    height:60px;
-
-    display:flex;
-    justify-content:center;
-    align-items:center;
-
-    background:linear-gradient(90deg,#ff0000,#ff7300,#ff0000);
-
-    color:white;
-
-    font-size:30px;
-    font-weight:bold;
-
-    letter-spacing:2px;
-
-    text-shadow:2px 2px 5px black;
-
-    box-shadow:0 4px 15px rgba(0,0,0,.35);
-
-    z-index:10;
+body {
+  position: relative;
 }
 
-/* ===========================
-   ИГРА
-=========================== */
-
-#game{
-    position:relative;
-
-    width:100vw;
-    height:calc(100vh - 60px);
-
-    overflow:hidden;
-
-    background:linear-gradient(#79d8ff,#b8efff 70%,#dfffff);
+#gameCanvas {
+  display: block;
+  width: 100%;
+  height: 100%;
 }
 
-/* ===========================
-   СОЛНЦЕ
-=========================== */
-
-#game::before{
-
-    content:"";
-
-    position:absolute;
-
-    top:40px;
-    right:70px;
-
-    width:120px;
-    height:120px;
-
-    border-radius:50%;
-
-    background:#ffe14d;
-
-    box-shadow:
-    0 0 30px yellow,
-    0 0 60px gold,
-    0 0 100px yellow;
+/* HUD */
+#hud {
+  position: fixed;
+  inset: 0 auto auto 0;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 14px;
+  z-index: 20;
+  pointer-events: none;
 }
 
-/* ===========================
-   ЗЕМЛЯ
-=========================== */
-
-#game::after{
-
-    content:"";
-
-    position:absolute;
-
-    left:0;
-    bottom:0;
-
-    width:100%;
-    height:130px;
-
-    background:linear-gradient(#5dd65d,#2da82d);
-
-    border-top:6px solid #2f7a2f;
+.hud-col {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 
-/* ===========================
-   ОБЛАКА
-=========================== */
-
-.cloud{
-
-    position:absolute;
-
-    width:120px;
-    height:45px;
-
-    background:white;
-
-    border-radius:50px;
-
-    opacity:.9;
-
-    animation:cloudMove 35s linear infinite;
+.hud-col.center {
+  align-items: center;
 }
 
-.cloud::before{
-
-    content:"";
-
-    position:absolute;
-
-    width:55px;
-    height:55px;
-
-    left:15px;
-    top:-20px;
-
-    border-radius:50%;
-
-    background:white;
+.hud-col.right {
+  align-items: flex-end;
 }
 
-.cloud::after{
-
-    content:"";
-
-    position:absolute;
-
-    width:65px;
-    height:65px;
-
-    right:15px;
-    top:-28px;
-
-    border-radius:50%;
-
-    background:white;
+.hud-box {
+  min-width: 110px;
+  padding: 10px 14px;
+  border-radius: 14px;
+  background: rgba(8, 12, 20, 0.58);
+  border: 1px solid rgba(255,255,255,0.12);
+  backdrop-filter: blur(8px);
+  color: #fff;
 }
 
-@keyframes cloudMove{
-
-    from{
-        transform:translateX(110vw);
-    }
-
-    to{
-        transform:translateX(-220px);
-    }
-
+.hud-box.big {
+  min-width: 150px;
+  text-align: center;
 }
 
-/* ===========================
-   ПЕРСОНАЖ
-=========================== */
-
-#player{
-
-    position:absolute;
-
-    left:90px;
-
-    bottom:130px;
-
-    width:80px;
-    height:90px;
-
-    object-fit:contain;
-
-    z-index:5;
+.hud-label {
+  font-size: 11px;
+  letter-spacing: 1px;
+  opacity: 0.75;
+  margin-bottom: 4px;
 }
 
-/* ===========================
-   КАКТУС
-=========================== */
-
-#cactus{
-
-    position:absolute;
-
-    bottom:130px;
-    right:-80px;
-
-    width:34px;
-    height:95px;
-
-    background:#0e9d32;
-
-    border-radius:8px;
-
-    z-index:4;
+.hud-value {
+  font-size: 22px;
+  font-weight: 800;
 }
 
-/* ветка */
-
-#cactus::before{
-
-    content:"";
-
-    position:absolute;
-
-    left:-16px;
-    top:32px;
-
-    width:18px;
-    height:40px;
-
-    border-radius:8px;
-
-    background:#0e9d32;
+/* overlays */
+.overlay {
+  position: fixed;
+  inset: 0;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: rgba(0,0,0,0.45);
+  z-index: 50;
 }
 
-/* ветка */
-
-#cactus::after{
-
-    content:"";
-
-    position:absolute;
-
-    right:-16px;
-    top:12px;
-
-    width:18px;
-    height:40px;
-
-    border-radius:8px;
-
-    background:#0e9d32;
+.overlay.visible {
+  display: flex;
 }
 
-/* ===========================
-   СЧЕТ
-=========================== */
-
-#score{
-
-    position:absolute;
-
-    top:20px;
-    right:25px;
-
-    font-size:34px;
-
-    font-weight:bold;
-
-    color:#222;
-
-    background:rgba(255,255,255,.75);
-
-    padding:8px 18px;
-
-    border-radius:15px;
-
-    box-shadow:0 5px 10px rgba(0,0,0,.25);
+.panel {
+  width: min(92vw, 520px);
+  padding: 26px 22px;
+  border-radius: 20px;
+  background: rgba(8, 12, 20, 0.92);
+  color: #fff;
+  text-align: center;
+  box-shadow: 0 12px 40px rgba(0,0,0,0.4);
 }
 
-/* ===========================
-   АДАПТАЦИЯ ДЛЯ ТЕЛЕФОНА
-=========================== */
-
-@media (max-width:768px){
-
-#banner{
-
-    height:50px;
-    font-size:20px;
+.panel h1 {
+  margin: 0 0 14px;
+  font-size: clamp(28px, 4vw, 40px);
 }
 
-#game{
-
-    height:calc(100vh - 50px);
+.panel p {
+  margin: 8px 0;
+  line-height: 1.4;
+  opacity: 0.9;
 }
 
-#player{
-
-    width:60px;
-    height:70px;
-
-    left:30px;
-
-    bottom:100px;
+.panel button {
+  margin-top: 18px;
+  min-width: 180px;
+  padding: 14px 22px;
+  border: 0;
+  border-radius: 14px;
+  font-size: 18px;
+  font-weight: 800;
+  cursor: pointer;
+  background: linear-gradient(180deg, #ffd65a, #ffae00);
+  color: #111;
 }
 
-#cactus{
-
-    width:28px;
-    height:75px;
-
-    bottom:100px;
+/* mobile controls */
+#mobileControls {
+  position: fixed;
+  inset: auto 0 14px 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  padding: 0 14px;
+  z-index: 30;
+  pointer-events: none;
 }
 
-#game::after{
-
-    height:100px;
+.mobile-side {
+  display: flex;
+  gap: 10px;
+  pointer-events: auto;
 }
 
-#score{
-
-    font-size:24px;
-
-    right:10px;
-    top:10px;
+.mobile-side.right {
+  flex-direction: column-reverse;
 }
 
-}
-#gameOver{
-
-position:absolute;
-
-left:0;
-top:0;
-
-width:100%;
-height:100%;
-
-display:flex;
-
-justify-content:center;
-align-items:center;
-
-flex-direction:column;
-
-background:rgba(0,0,0,.55);
-
-color:white;
-
-font-size:60px;
-
-font-weight:bold;
-
-text-align:center;
-
-z-index:100;
+.control-btn {
+  border: 0;
+  border-radius: 18px;
+  color: #fff;
+  font-weight: 800;
+  background: rgba(12, 18, 28, 0.7);
+  border: 1px solid rgba(255,255,255,0.14);
+  backdrop-filter: blur(8px);
+  box-shadow: 0 10px 24px rgba(0,0,0,0.28);
+  user-select: none;
+  touch-action: none;
 }
 
-#gameOver small{
+.steer-btn {
+  width: 74px;
+  height: 74px;
+  font-size: 30px;
+}
 
-font-size:22px;
-margin-top:20px;
+.pedal-btn {
+  width: 110px;
+  height: 64px;
+  font-size: 18px;
+}
 
+.pedal-btn.gas {
+  height: 82px;
+  background: rgba(0, 135, 75, 0.72);
+}
+
+.control-btn.active {
+  transform: scale(0.96);
+  filter: brightness(1.18);
+}
+
+@media (min-width: 1100px) {
+  .steer-btn {
+    width: 86px;
+    height: 86px;
+  }
+
+  .pedal-btn {
+    width: 126px;
+    height: 72px;
+  }
+
+  .pedal-btn.gas {
+    height: 94px;
+  }
+}
+
+@media (max-width: 900px) {
+  #hud {
+    gap: 8px;
+    padding: 10px;
+  }
+
+  .hud-box {
+    min-width: 88px;
+    padding: 8px 10px;
+    border-radius: 12px;
+  }
+
+  .hud-box.big {
+    min-width: 118px;
+  }
+
+  .hud-label {
+    font-size: 10px;
+  }
+
+  .hud-value {
+    font-size: 17px;
+  }
+
+  .panel {
+    padding: 20px 16px;
+  }
+
+  .panel h1 {
+    font-size: 28px;
+  }
+
+  .panel p {
+    font-size: 14px;
+  }
+
+  .panel button {
+    min-width: 160px;
+    font-size: 16px;
+    padding: 12px 18px;
+  }
+
+  .steer-btn {
+    width: 64px;
+    height: 64px;
+    font-size: 26px;
+  }
+
+  .pedal-btn {
+    width: 96px;
+    height: 58px;
+    font-size: 16px;
+  }
+
+  .pedal-btn.gas {
+    height: 74px;
+  }
+}
+
+@media (max-width: 560px) {
+  #hud {
+    align-items: flex-start;
+  }
+
+  .hud-col {
+    gap: 6px;
+  }
+
+  .hud-box {
+    min-width: 72px;
+    padding: 7px 8px;
+  }
+
+  .hud-box.big {
+    min-width: 100px;
+  }
+
+  .hud-value {
+    font-size: 15px;
+  }
+
+  #mobileControls {
+    padding: 0 10px;
+    bottom: 10px;
+  }
+
+  .mobile-side {
+    gap: 8px;
+  }
+
+  .steer-btn {
+    width: 58px;
+    height: 58px;
+    font-size: 22px;
+  }
+
+  .pedal-btn {
+    width: 88px;
+    height: 54px;
+    font-size: 14px;
+  }
+
+  .pedal-btn.gas {
+    height: 68px;
+  }
 }

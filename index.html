@@ -1,37 +1,80 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>Aslan Runner</title>
-
-<link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Traffic Racer 3D</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
-
 <body>
+  <canvas id="gameCanvas"></canvas>
 
-<div id="banner">
-    Aslan geliyor Aslan
-</div>
+  <div id="hud">
+    <div class="hud-col">
+      <div class="hud-box">
+        <div class="hud-label">ОЧКИ</div>
+        <div id="score" class="hud-value">0</div>
+      </div>
+      <div class="hud-box">
+        <div class="hud-label">МНОЖИТЕЛЬ</div>
+        <div id="multiplier" class="hud-value">x1.0</div>
+      </div>
+    </div>
 
-<div id="game">
+    <div class="hud-col center">
+      <div class="hud-box big">
+        <div class="hud-label">СКОРОСТЬ</div>
+        <div id="speed" class="hud-value">0 км/ч</div>
+      </div>
+      <div class="hud-box big">
+        <div class="hud-label">ДИСТАНЦИЯ</div>
+        <div id="distance" class="hud-value">0.00 км</div>
+      </div>
+    </div>
 
-    <div id="score">0</div>
+    <div class="hud-col right">
+      <div class="hud-box">
+        <div class="hud-label">ТРАФИК</div>
+        <div id="trafficCount" class="hud-value">0</div>
+      </div>
+      <div class="hud-box">
+        <div class="hud-label">СТАТУС</div>
+        <div id="status" class="hud-value">READY</div>
+      </div>
+    </div>
+  </div>
 
-    <div id="gameOver">GAME OVER<br><small>Нажмите, чтобы начать заново</small></div>
+  <div id="startOverlay" class="overlay visible">
+    <div class="panel">
+      <h1>TRAFFIC RACER 3D</h1>
+      <p>ПК: W / ↑ — газ, S / ↓ — тормоз, A D / ← → — поворот</p>
+      <p>Телефон: используй экранные кнопки</p>
+      <button id="startBtn">СТАРТ</button>
+    </div>
+  </div>
 
-    <img id="player" src="Images/player.png.png" alt="Player">
+  <div id="gameOverOverlay" class="overlay">
+    <div class="panel">
+      <h1>АВАРИЯ</h1>
+      <p id="finalStats">Счёт: 0</p>
+      <button id="restartBtn">РЕСТАРТ</button>
+    </div>
+  </div>
 
-    <div id="cactus"></div>
+  <!-- мобильное управление -->
+  <div id="mobileControls">
+    <div class="mobile-side left">
+      <button class="control-btn steer-btn" id="leftBtn">◀</button>
+      <button class="control-btn steer-btn" id="rightBtn">▶</button>
+    </div>
 
-</div>
+    <div class="mobile-side right">
+      <button class="control-btn pedal-btn" id="brakeBtn">BRAKE</button>
+      <button class="control-btn pedal-btn gas" id="gasBtn">GAS</button>
+    </div>
+  </div>
 
-<audio id="music" loop>
-    <source src="Music/music.mp3.mp3" type="audio/mpeg">
-</audio>
-
-<script src="script.js"></script>
-
+  <script src="https://unpkg.com/three@0.160.0/build/three.min.js"></script>
+  <script src="main.js"></script>
 </body>
 </html>
