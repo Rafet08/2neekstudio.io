@@ -49,7 +49,9 @@ dialog{border:0;border-radius:20px;width:min(94vw,540px);padding:0;box-shadow:0 
 <dialog id="login"><div class="modal"><button class="close" id="close">×</button><h2>Вход администратора</h2><p class="muted">Нажмите на поле — клавиатура телефона появится автоматически.</p>
 <label>E-mail</label><input class="input" id="email" type="email" autocomplete="username" inputmode="email" placeholder="rafetdzhordanidze@gmail.com">
 <label>Пароль</label><input class="input" id="pass" type="password" autocomplete="current-password" placeholder="Введите пароль">
-<div id="loginMsg"></div><button class="btn primary full" id="loginBtn" style="margin-top:13px">Войти</button></div></dialog>
+<div id="loginMsg"></div><button class="btn primary full" id="loginBtn" style="margin-top:13px">Войти</button>
+<button class="btn ghost full" id="diagBtn" style="margin-top:8px">🛠 Проверить Firebase</button>
+<div id="diagMsg" class="muted" style="margin-top:8px"></div></div></dialog>
 
 <script>
 const firebaseConfig={apiKey:"AIzaSyBb2gLGBAPtWIXF-Qv2em7S2EwdTLQ0w2A",authDomain:"firkaan.firebaseapp.com",databaseURL:"https://firkaan-default-rtdb.asia-southeast1.firebasedatabase.app",projectId:"firkaan",storageBucket:"firkaan.firebasestorage.app",messagingSenderId:"369015493396",appId:"1:369015493396:web:da9201c4ca1de513c7e801"};
@@ -62,7 +64,49 @@ function stop(type){try{if(type==="c"&&scanner){scanner.clear();scanner=null;$("
 function start(type){if(typeof Html5Qrcode==="undefined"){alert("Сканер загружается, попробуйте ещё раз.");return}let id=type==="c"?"reader":"adminReader",s=new Html5Qrcode(id);if(type==="c"){scanner=s}else adminScanner=s;$(id).classList.remove("hidden");s.start({facingMode:"environment"},{fps:10,qrbox:{width:250,height:120}},code=>{if(type==="c"){search(code);$("scanMsg").textContent="Штрихкод считан.";stop("c")}else{$("code").value=code;stop("a")}},()=>{}).catch(()=>{stop(type);alert("Не удалось открыть камеру. Разрешите камеру и используйте HTTPS.")})}
 $("scan").onclick=()=>start("c");$("find").onclick=()=>search($("manual").value);$("manual").onkeydown=e=>{if(e.key==="Enter")search(e.target.value)};
 $("adminOpen").onclick=()=>{if(auth.currentUser?.email===ADMIN){$("admin").scrollIntoView({behavior:"smooth"})}else{$("login").showModal();setTimeout(()=>$("email").focus(),100)}};
-$("close").onclick=()=>$("login").close();$("loginBtn").onclick=async()=>{let e=$("email").value.trim(),p=$("pass").value;if(!e||!p){$("loginMsg").innerHTML='<div class="notice error">Введите e-mail и пароль.</div>';return}try{let u=await auth.signInWithEmailAndPassword(e,p);if(u.user.email!==ADMIN){await auth.signOut();throw 0}$("login").close()}catch(e){$("loginMsg").innerHTML='<div class="notice error">Неверный e-mail или пароль.</div>'}};
+$("close").onclick=()=>$("login").close();
+$("diagBtn").onclick=async()=>{
+  const tests=[];
+  tests.push("Firebase App: "+(firebase.apps.length?"подключён":"НЕ подключён"));
+  tests.push("Project ID: "+firebase.app().options.projectId);
+  tests.push("Auth domain: "+firebase.app().options.authDomain);
+  tests.push("Database URL: "+firebase.app().options.databaseURL);
+  try{
+    await db.ref("products").limitToFirst(1).once("value");
+    tests.push("Realtime Database: доступна");
+    $("diagMsg").innerHTML='<div class="notice success"><b>Диагностика</b><br>'+tests.map(esc).join("<br>")+'</div>';
+  }catch(err){
+    tests.push("Realtime Database ERROR: "+(err.code||"unknown")+" — "+(err.message||err));
+    $("diagMsg").innerHTML='<div class="notice error"><b>Диагностика</b><br>'+tests.map(esc).join("<br>")+'</div>';
+  }
+};
+$("close").onclick=()=>$("login").close();$("loginBtn").onclick=async()=>{let e=$("email").value.trim(),p=$("pass").value;if(!e||!p){$("loginMsg").innerHTML='<div class="notice error">Введите e-mail и пароль.</div>';return}try{
+  let u=await auth.signInWithEmailAndPassword(e,p);
+  console.log("FIRKAANN LOGIN OK:",u.user.email,u.user.uid);
+  if(u.user.email.toLowerCase()!==ADMIN.toLowerCase()){
+    await auth.signOut();
+    $("loginMsg").innerHTML='<div class="notice error"><b>Firebase вход выполнен, но этот e-mail не является администратором.</b><br>E-mail аккаунта: '+esc(u.user.email)+'<br>Ожидается: '+esc(ADMIN)+'</div>';
+    return;
+  }
+  $("loginMsg").innerHTML='<div class="notice success">Вход выполнен. Открываю админ-панель...</div>';
+  setTimeout(()=>$("login").close(),300);
+}catch(err){
+  console.error("FIRKAANN LOGIN ERROR:",err);
+  let code=err && err.code ? err.code : "unknown";
+  let msg=err && err.message ? err.message : String(err);
+  let help={
+    "auth/invalid-credential":"Firebase отклонил данные входа. Проверьте e-mail и пароль.",
+    "auth/invalid-login-credentials":"Firebase отклонил данные входа. Проверьте e-mail и пароль.",
+    "auth/wrong-password":"Неверный пароль.",
+    "auth/user-not-found":"Пользователь с таким e-mail не найден.",
+    "auth/invalid-email":"Неверный формат e-mail.",
+    "auth/user-disabled":"Этот пользователь отключён в Firebase.",
+    "auth/too-many-requests":"Слишком много попыток входа. Подождите немного и попробуйте снова.",
+    "auth/network-request-failed":"Нет соединения с Firebase. Проверьте интернет.",
+    "auth/operation-not-allowed":"В Firebase не включён вход Email/Password."
+  };
+  $("loginMsg").innerHTML='<div class="notice error"><b>Ошибка Firebase</b><br><br><b>Код:</b> '+esc(code)+'<br><b>Сообщение:</b> '+esc(msg)+'<br><br><b>Что это значит:</b> '+esc(help[code]||"Неизвестная ошибка. Нажмите «Проверить Firebase» или откройте F12 → Console.")+'</div>';
+}};
 $("logout").onclick=()=>auth.signOut();$("scanAdmin").onclick=()=>start("a");
 auth.onAuthStateChanged(u=>{if(u?.email===ADMIN){$("admin").classList.remove("hidden");render()}else $("admin").classList.add("hidden")});
 db.ref("products").on("value",s=>{products=s.val()||{};render()});
