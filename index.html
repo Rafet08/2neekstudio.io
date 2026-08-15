@@ -65,7 +65,7 @@ label{display:block;font-weight:700;margin:14px 0 7px}.primary{width:100%;backgr
 <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-database-compat.js"></script>
 <script>
 window.addEventListener("error",e=>console.error("FIRKAANN JS:",e.error||e.message));
-const firebaseConfig={apiKey:"AIzaSyBb2gLGBAPtWIXf-Qv2em7S2EwdTLQ0w2A",authDomain:"firkaan.firebaseapp.com",projectId:"firkaan",storageBucket:"firkaan.firebasestorage.app",messagingSenderId:"369015493396",appId:"1:369015493396:web:da9201c4ca1de513c7e801",measurementId:"G-8NH2JHKEJD"};
+const firebaseConfig={apiKey:"AIzaSyANVD3GeQhUIDrYtjWGRPc72S9I54exjQo",authDomain:"firkaan.firebaseapp.com",projectId:"firkaan",storageBucket:"firkaan.firebasestorage.app",messagingSenderId:"369015493396",appId:"1:369015493396:web:da9201c4ca1de513c7e801",measurementId:"G-8NH2JHKEJD"};
 let auth=null,db=null,firebaseReady=false,scannerStream=null,barcodeDetector=null,scanTarget="public";
 try{firebase.initializeApp(firebaseConfig);auth=firebase.auth();db=firebase.database();firebaseReady=true}catch(e){console.error(e)}
 const $=id=>document.getElementById(id);
