@@ -129,6 +129,9 @@ label{display:block;font-weight:700;margin:14px 0 7px}
 <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-database-compat.js"></script>
 
 <script>
+window.addEventListener("error", function(e){
+  console.error("FIRKAANN JS error:", e.error || e.message);
+});
 /* =========================
    FIRKAANN FIREBASE CONFIG
    ========================= */
@@ -279,7 +282,7 @@ async function saveProduct(){
  if(!name||!barcode||!price){setError("productError","Заполните название, штрихкод и цену.");return;}
  if(!auth.currentUser){setError("productError","Сначала войдите в администратора.");return;}
  try{
-   const safeKey=barcode.replace(/[.#$\\[\\]/]/g,"_");
+   const safeKey=barcode.replace(/[.#$\/\[\]]/g,"_");
    await db.ref("products/"+safeKey).set({
      name:name,
      barcode:barcode,
@@ -324,7 +327,7 @@ async function findProduct(code){
  result.classList.add("show");
  result.innerHTML="Поиск...";
  try{
-   const safeKey=code.replace(/[.#$\\[\\]/]/g,"_");
+   const safeKey=code.replace(/[.#$\/\[\]]/g,"_");
    const snap=await db.ref("products/"+safeKey).once("value");
    const p=snap.val();
    if(!p){
