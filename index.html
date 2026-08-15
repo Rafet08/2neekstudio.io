@@ -1,80 +1,78 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>Traffic Racer 3D</title>
-  <link rel="stylesheet" href="style.css" />
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#f58220">
+<title>FIRKAANN — Проверка цены</title>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
+<script src="https://unpkg.com/html5-qrcode" defer></script>
+<style>
+:root{--o:#f58220;--o2:#e96d09;--bg:#fffaf5;--ink:#242424;--muted:#777;--line:#eadfd5}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif}
+.top{background:linear-gradient(135deg,var(--o),var(--o2));color:#fff;padding:16px;box-shadow:0 3px 16px #0002}.head,main{max-width:720px;margin:auto}.head{display:flex;align-items:center;justify-content:space-between}.logo{font-size:25px;font-weight:900;letter-spacing:1px}.logo span{font-weight:400}
+main{padding:18px 14px 70px}.hero{text-align:center;padding:15px 0}.hero h1{margin:0 0 7px;font-size:28px}.muted{color:var(--muted);font-size:14px}
+.card{background:#fff;border:1px solid var(--line);border-radius:20px;padding:16px;margin-top:15px;box-shadow:0 8px 28px #5d2d0d0d}.btn{border:0;border-radius:13px;padding:13px 16px;min-height:48px;font-size:16px;font-weight:750;cursor:pointer}.primary{background:var(--o);color:#fff}.secondary{background:#fff1e4;color:#a94f00}.ghost{background:#f5f2ef}.danger{background:#fff0f0;color:#b42318}.full{width:100%}
+.input,select{width:100%;min-height:49px;border:1px solid #d9cec5;border-radius:12px;padding:12px 14px;font-size:16px;background:#fff;outline:none}.input:focus{border-color:var(--o);box-shadow:0 0 0 3px #f5822020}label{display:block;font-size:14px;font-weight:700;margin:13px 0 6px}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:9px}.barcode{display:grid;grid-template-columns:1fr auto;gap:8px}.hidden{display:none!important}
+#reader,#adminReader{width:100%;margin-top:10px;border-radius:14px;overflow:hidden}.result{text-align:center;padding:12px}.pname{font-size:25px;font-weight:850}.price{font-size:38px;font-weight:900;color:var(--o);margin:7px}.stock{display:inline-block;padding:7px 12px;border-radius:30px;background:#eaf8ef;color:#16733a;font-weight:750}.out{background:#fff0f0;color:#b42318}.notice{padding:11px;border-radius:12px;margin-top:10px;background:#fff7e8;color:#7a4a00}.success{background:#eefaf2;color:#176b35}.error{background:#fff0f0;color:#a61b1b}
+.item{border:1px solid var(--line);border-radius:15px;padding:12px;margin-top:9px}.actions{display:flex;gap:8px;margin-top:9px}.actions .btn{flex:1;min-height:43px;padding:9px}
+dialog{border:0;border-radius:20px;width:min(94vw,540px);padding:0;box-shadow:0 20px 70px #0005}dialog::backdrop{background:#0008}.modal{padding:18px}.close{float:right;border:0;border-radius:50%;width:38px;height:38px;font-size:20px}
+@media(max-width:520px){.row{grid-template-columns:1fr}.hero h1{font-size:25px}.price{font-size:34px}}
+</style>
 </head>
 <body>
-  <canvas id="gameCanvas"></canvas>
+<header class="top"><div class="head"><div class="logo">FIR<span>KAANN</span></div><button class="btn secondary" id="adminOpen">⚙ Админ</button></div></header>
+<main>
+<section class="hero"><h1>Проверка цены</h1><p class="muted">Сканируйте штрихкод напитка и узнайте актуальную цену.</p></section>
+<section class="card">
+<button class="btn primary full" id="scan">📷 Сканировать штрихкод</button>
+<div id="reader" class="hidden"></div><div id="scanMsg" class="muted" style="text-align:center;margin-top:9px"></div>
+<div id="result" class="result hidden"><div class="pname" id="rName"></div><div class="price" id="rPrice"></div><div id="rStock"></div><div class="muted" id="rCode"></div></div>
+<div style="margin-top:12px"><input class="input" id="manual" inputmode="numeric" placeholder="Или введите штрихкод вручную"><button class="btn ghost full" id="find" style="margin-top:8px">🔎 Найти товар</button></div>
+</section>
+<section id="admin" class="card hidden">
+<div style="display:flex;gap:7px;flex-wrap:wrap"><button class="btn primary" id="new">＋ Новый товар</button><button class="btn ghost" id="logout">Выйти</button></div>
+<div id="notice"></div>
+<div id="form" class="hidden"><h2 id="ft">Новый товар</h2><input type="hidden" id="eid">
+<label>Название</label><input class="input" id="name" autocomplete="off" placeholder="Coca-Cola 0.5 л">
+<label>Штрихкод</label><div class="barcode"><input class="input" id="code" inputmode="numeric" autocomplete="off" placeholder="Отсканируйте или введите"><button class="btn secondary" id="scanAdmin">📷</button></div>
+<div id="adminReader" class="hidden"></div>
+<label>Цена, ₸</label><input class="input" id="price" inputmode="decimal" placeholder="450">
+<label>Наличие</label><select id="stock" class="input"><option value="in">В наличии</option><option value="out">Нет в наличии</option></select>
+<div class="row" style="margin-top:13px"><button class="btn primary" id="save">Сохранить</button><button class="btn ghost" id="cancel">Отмена</button></div></div>
+<div id="list"></div>
+</section>
+</main>
+<dialog id="login"><div class="modal"><button class="close" id="close">×</button><h2>Вход администратора</h2><p class="muted">Нажмите на поле — клавиатура телефона появится автоматически.</p>
+<label>E-mail</label><input class="input" id="email" type="email" autocomplete="username" inputmode="email" placeholder="rafetdzhordanidze@gmail.com">
+<label>Пароль</label><input class="input" id="pass" type="password" autocomplete="current-password" placeholder="Введите пароль">
+<div id="loginMsg"></div><button class="btn primary full" id="loginBtn" style="margin-top:13px">Войти</button></div></dialog>
 
-  <div id="hud">
-    <div class="hud-col">
-      <div class="hud-box">
-        <div class="hud-label">ОЧКИ</div>
-        <div id="score" class="hud-value">0</div>
-      </div>
-      <div class="hud-box">
-        <div class="hud-label">МНОЖИТЕЛЬ</div>
-        <div id="multiplier" class="hud-value">x1.0</div>
-      </div>
-    </div>
-
-    <div class="hud-col center">
-      <div class="hud-box big">
-        <div class="hud-label">СКОРОСТЬ</div>
-        <div id="speed" class="hud-value">0 км/ч</div>
-      </div>
-      <div class="hud-box big">
-        <div class="hud-label">ДИСТАНЦИЯ</div>
-        <div id="distance" class="hud-value">0.00 км</div>
-      </div>
-    </div>
-
-    <div class="hud-col right">
-      <div class="hud-box">
-        <div class="hud-label">ТРАФИК</div>
-        <div id="trafficCount" class="hud-value">0</div>
-      </div>
-      <div class="hud-box">
-        <div class="hud-label">СТАТУС</div>
-        <div id="status" class="hud-value">READY</div>
-      </div>
-    </div>
-  </div>
-
-  <div id="startOverlay" class="overlay visible">
-    <div class="panel">
-      <h1>TRAFFIC RACER 3D</h1>
-      <p>ПК: W / ↑ — газ, S / ↓ — тормоз, A D / ← → — поворот</p>
-      <p>Телефон: используй экранные кнопки</p>
-      <button id="startBtn">СТАРТ</button>
-    </div>
-  </div>
-
-  <div id="gameOverOverlay" class="overlay">
-    <div class="panel">
-      <h1>АВАРИЯ</h1>
-      <p id="finalStats">Счёт: 0</p>
-      <button id="restartBtn">РЕСТАРТ</button>
-    </div>
-  </div>
-
-  <!-- мобильное управление -->
-  <div id="mobileControls">
-    <div class="mobile-side left">
-      <button class="control-btn steer-btn" id="leftBtn">◀</button>
-      <button class="control-btn steer-btn" id="rightBtn">▶</button>
-    </div>
-
-    <div class="mobile-side right">
-      <button class="control-btn pedal-btn" id="brakeBtn">BRAKE</button>
-      <button class="control-btn pedal-btn gas" id="gasBtn">GAS</button>
-    </div>
-  </div>
-
-  <script src="https://unpkg.com/three@0.160.0/build/three.min.js"></script>
-  <script src="main.js"></script>
+<script>
+const firebaseConfig={apiKey:"AIzaSyBb2gLGBAPtWIXF-Qv2em7S2EwdTLQ0w2A",authDomain:"firkaan.firebaseapp.com",databaseURL:"https://firkaan-default-rtdb.asia-southeast1.firebasedatabase.app",projectId:"firkaan",storageBucket:"firkaan.firebasestorage.app",messagingSenderId:"369015493396",appId:"1:369015493396:web:da9201c4ca1de513c7e801"};
+const ADMIN="rafetdzhordanidze@gmail.com";firebase.initializeApp(firebaseConfig);const auth=firebase.auth(),db=firebase.database();let products={},scanner=null,adminScanner=null;
+const $=x=>document.getElementById(x), money=x=>Number(x||0).toLocaleString("ru-RU")+" ₸";
+function find(code){code=String(code).replace(/\D/g,"");return Object.entries(products).find(x=>String(x[1].barcode||"").replace(/\D/g,"")===code)}
+function result(p,c){$("result").classList.remove("hidden");$("rName").textContent=p.name;$("rPrice").textContent=money(p.price);$("rCode").textContent="Штрихкод: "+c;$("rStock").innerHTML=p.stock==="out"?'<span class="stock out">Нет в наличии</span>':'<span class="stock">✓ В наличии</span>'}
+function search(c){let x=find(c);if(x)result(x[1],c);else{$("result").classList.add("hidden");$("scanMsg").textContent="Товар не найден."}}
+function stop(type){try{if(type==="c"&&scanner){scanner.clear();scanner=null;$("reader").classList.add("hidden")}if(type==="a"&&adminScanner){adminScanner.clear();adminScanner=null;$("adminReader").classList.add("hidden")}}catch(e){}}
+function start(type){if(typeof Html5Qrcode==="undefined"){alert("Сканер загружается, попробуйте ещё раз.");return}let id=type==="c"?"reader":"adminReader",s=new Html5Qrcode(id);if(type==="c"){scanner=s}else adminScanner=s;$(id).classList.remove("hidden");s.start({facingMode:"environment"},{fps:10,qrbox:{width:250,height:120}},code=>{if(type==="c"){search(code);$("scanMsg").textContent="Штрихкод считан.";stop("c")}else{$("code").value=code;stop("a")}},()=>{}).catch(()=>{stop(type);alert("Не удалось открыть камеру. Разрешите камеру и используйте HTTPS.")})}
+$("scan").onclick=()=>start("c");$("find").onclick=()=>search($("manual").value);$("manual").onkeydown=e=>{if(e.key==="Enter")search(e.target.value)};
+$("adminOpen").onclick=()=>{if(auth.currentUser?.email===ADMIN){$("admin").scrollIntoView({behavior:"smooth"})}else{$("login").showModal();setTimeout(()=>$("email").focus(),100)}};
+$("close").onclick=()=>$("login").close();$("loginBtn").onclick=async()=>{let e=$("email").value.trim(),p=$("pass").value;if(!e||!p){$("loginMsg").innerHTML='<div class="notice error">Введите e-mail и пароль.</div>';return}try{let u=await auth.signInWithEmailAndPassword(e,p);if(u.user.email!==ADMIN){await auth.signOut();throw 0}$("login").close()}catch(e){$("loginMsg").innerHTML='<div class="notice error">Неверный e-mail или пароль.</div>'}};
+$("logout").onclick=()=>auth.signOut();$("scanAdmin").onclick=()=>start("a");
+auth.onAuthStateChanged(u=>{if(u?.email===ADMIN){$("admin").classList.remove("hidden");render()}else $("admin").classList.add("hidden")});
+db.ref("products").on("value",s=>{products=s.val()||{};render()});
+$("new").onclick=()=>{clearForm();$("form").classList.remove("hidden");$("name").focus()};$("cancel").onclick=()=>{$("form").classList.add("hidden");clearForm()};
+function clearForm(){$("eid").value="";$("name").value="";$("code").value="";$("price").value="";$("stock").value="in";$("ft").textContent="Новый товар"}
+$("save").onclick=async()=>{let n=$("name").value.trim(),c=$("code").value.replace(/\D/g,""),p=Number($("price").value),st=$("stock").value,id=$("eid").value;if(!n||!c||!Number.isFinite(p)){alert("Заполните название, штрихкод и цену.");return}let d=find(c);if(d&&d[0]!==id){alert("Такой штрихкод уже есть.");return}let data={name:n,barcode:c,price:p,stock:st,updatedAt:Date.now()};try{if(id)await db.ref("products/"+id).update(data);else await db.ref("products").push({...data,createdAt:Date.now()});$("form").classList.add("hidden");clearForm();$("notice").innerHTML='<div class="notice success">Товар сохранён.</div>'}catch(e){$("notice").innerHTML='<div class="notice error">Ошибка сохранения.</div>'}};
+function esc(s){return String(s).replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]))}
+function render(){let a=Object.entries(products);if(!a.length){$("list").innerHTML='<div class="notice">Товаров пока нет.</div>';return}$("list").innerHTML="<h2>Товары ("+a.length+")</h2>"+a.map(([id,p])=>'<div class="item"><b>'+esc(p.name)+'</b><div class="muted">'+esc(p.barcode)+' · '+money(p.price)+' · '+(p.stock==="out"?"Нет в наличии":"В наличии")+'</div><div class="actions"><button class="btn secondary" onclick="editP(\''+id+'\')">✏️ Изменить</button><button class="btn danger" onclick="delP(\''+id+'\')">🗑️ Удалить</button></div></div>').join("")}
+window.editP=id=>{let p=products[id];$("eid").value=id;$("name").value=p.name;$("code").value=p.barcode;$("price").value=p.price;$("stock").value=p.stock||"in";$("ft").textContent="Изменить товар";$("form").classList.remove("hidden");$("name").focus()};
+window.delP=async id=>{if(confirm("Удалить товар?"))await db.ref("products/"+id).remove()};
+</script>
 </body>
 </html>
