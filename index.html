@@ -1,122 +1,394 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="ru">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#f58220">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#f57c00">
 <title>FIRKAANN — Проверка цены</title>
-<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-database-compat.js"></script>
-<script src="https://unpkg.com/html5-qrcode" defer></script>
 <style>
-:root{--o:#f58220;--o2:#e96d09;--bg:#fffaf5;--ink:#242424;--muted:#777;--line:#eadfd5}
-*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif}
-.top{background:linear-gradient(135deg,var(--o),var(--o2));color:#fff;padding:16px;box-shadow:0 3px 16px #0002}.head,main{max-width:720px;margin:auto}.head{display:flex;align-items:center;justify-content:space-between}.logo{font-size:25px;font-weight:900;letter-spacing:1px}.logo span{font-weight:400}
-main{padding:18px 14px 70px}.hero{text-align:center;padding:15px 0}.hero h1{margin:0 0 7px;font-size:28px}.muted{color:var(--muted);font-size:14px}
-.card{background:#fff;border:1px solid var(--line);border-radius:20px;padding:16px;margin-top:15px;box-shadow:0 8px 28px #5d2d0d0d}.btn{border:0;border-radius:13px;padding:13px 16px;min-height:48px;font-size:16px;font-weight:750;cursor:pointer}.primary{background:var(--o);color:#fff}.secondary{background:#fff1e4;color:#a94f00}.ghost{background:#f5f2ef}.danger{background:#fff0f0;color:#b42318}.full{width:100%}
-.input,select{width:100%;min-height:49px;border:1px solid #d9cec5;border-radius:12px;padding:12px 14px;font-size:16px;background:#fff;outline:none}.input:focus{border-color:var(--o);box-shadow:0 0 0 3px #f5822020}label{display:block;font-size:14px;font-weight:700;margin:13px 0 6px}
-.row{display:grid;grid-template-columns:1fr 1fr;gap:9px}.barcode{display:grid;grid-template-columns:1fr auto;gap:8px}.hidden{display:none!important}
-#reader,#adminReader{width:100%;margin-top:10px;border-radius:14px;overflow:hidden}.result{text-align:center;padding:12px}.pname{font-size:25px;font-weight:850}.price{font-size:38px;font-weight:900;color:var(--o);margin:7px}.stock{display:inline-block;padding:7px 12px;border-radius:30px;background:#eaf8ef;color:#16733a;font-weight:750}.out{background:#fff0f0;color:#b42318}.notice{padding:11px;border-radius:12px;margin-top:10px;background:#fff7e8;color:#7a4a00}.success{background:#eefaf2;color:#176b35}.error{background:#fff0f0;color:#a61b1b}
-.item{border:1px solid var(--line);border-radius:15px;padding:12px;margin-top:9px}.actions{display:flex;gap:8px;margin-top:9px}.actions .btn{flex:1;min-height:43px;padding:9px}
-dialog{border:0;border-radius:20px;width:min(94vw,540px);padding:0;box-shadow:0 20px 70px #0005}dialog::backdrop{background:#0008}.modal{padding:18px}.close{float:right;border:0;border-radius:50%;width:38px;height:38px;font-size:20px}
-@media(max-width:520px){.row{grid-template-columns:1fr}.hero h1{font-size:25px}.price{font-size:34px}}
+*{box-sizing:border-box}
+body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;background:#f5f5f5;color:#171717}
+header{height:64px;background:#f57c00;color:#fff;display:flex;align-items:center;justify-content:space-between;padding:0 18px;position:sticky;top:0;z-index:10}
+.logo{font-size:24px;font-weight:800;letter-spacing:2px}
+button{border:0;border-radius:12px;padding:13px 18px;font-size:16px;font-weight:700;cursor:pointer}
+.adminBtn{background:#fff;color:#7b3f00}
+main{max-width:760px;margin:0 auto;padding:35px 16px}
+h1{text-align:center;margin:0 0 8px;font-size:30px}
+.subtitle{text-align:center;color:#666;margin-bottom:28px}
+.card{background:#fff;border-radius:20px;padding:18px;box-shadow:0 5px 25px #00000012}
+.bigScan{width:100%;background:#f57c00;color:#fff;font-size:18px;margin-bottom:12px}
+input{width:100%;height:50px;border:1px solid #d8d8d8;border-radius:12px;padding:0 14px;font-size:16px;outline:none;background:#fff}
+input:focus{border-color:#f57c00;box-shadow:0 0 0 3px #f57c0030}
+.result{margin-top:15px;padding:16px;border-radius:14px;background:#f7f7f7;display:none}
+.result.show{display:block}
+.price{font-size:28px;font-weight:800;color:#e66f00}
+.overlay{position:fixed;inset:0;background:#0008;display:none;align-items:center;justify-content:center;padding:14px;z-index:100}
+.overlay.show{display:flex}
+.modal{background:#fff;border-radius:20px;width:min(620px,100%);max-height:92vh;overflow:auto;padding:22px}
+.modalHead{display:flex;justify-content:space-between;align-items:center}
+.close{width:42px;height:42px;padding:0;border-radius:50%;background:#eee}
+label{display:block;font-weight:700;margin:14px 0 7px}
+.primary{width:100%;background:#f57c00;color:#fff}
+.secondary{width:100%;background:#eee;margin-top:10px}
+.error{background:#ffebee;color:#b71c1c;border-radius:12px;padding:12px;margin:12px 0;white-space:pre-wrap;display:none}
+.success{background:#e8f5e9;color:#1b5e20;border-radius:12px;padding:12px;margin:12px 0;display:none}
+.diag{background:#eef8f0;color:#176b2a;border-radius:12px;padding:12px;margin-top:12px;font-size:14px;line-height:1.5}
+.tabs{display:flex;gap:8px;margin:15px 0;overflow:auto}
+.tab{background:#eee;white-space:nowrap}
+.tab.active{background:#f57c00;color:#fff}
+.adminSection{display:none}
+.productRow{display:flex;gap:10px;align-items:center;border-bottom:1px solid #eee;padding:12px 0}
+.productInfo{flex:1}
+.productName{font-weight:700}
+.small{color:#777;font-size:13px}
+.rowBtns button{padding:8px 10px;font-size:13px}
+.cameraBox{position:relative;background:#111;border-radius:16px;overflow:hidden;margin-top:12px;display:none}
+#video{width:100%;display:block;max-height:300px;object-fit:cover}
+.cameraClose{position:absolute;right:10px;top:10px;background:#fff}
+.notice{font-size:13px;color:#666;margin-top:8px}
+@media(max-width:600px){
+ header{height:58px}.logo{font-size:20px}main{padding:25px 12px}
+ h1{font-size:26px}.modal{padding:18px;border-radius:18px}
+ input{font-size:16px} /* iOS does not zoom when font-size is >=16px */
+}
 </style>
 </head>
 <body>
-<header class="top"><div class="head"><div class="logo">FIR<span>KAANN</span></div><button class="btn secondary" id="adminOpen">⚙ Админ</button></div></header>
+<header>
+  <div class="logo">FIRKAANN</div>
+  <button class="adminBtn" id="adminOpen">⚙ Админ</button>
+</header>
+
 <main>
-<section class="hero"><h1>Проверка цены</h1><p class="muted">Сканируйте штрихкод напитка и узнайте актуальную цену.</p></section>
-<section class="card">
-<button class="btn primary full" id="scan">📷 Сканировать штрихкод</button>
-<div id="reader" class="hidden"></div><div id="scanMsg" class="muted" style="text-align:center;margin-top:9px"></div>
-<div id="result" class="result hidden"><div class="pname" id="rName"></div><div class="price" id="rPrice"></div><div id="rStock"></div><div class="muted" id="rCode"></div></div>
-<div style="margin-top:12px"><input class="input" id="manual" inputmode="numeric" placeholder="Или введите штрихкод вручную"><button class="btn ghost full" id="find" style="margin-top:8px">🔎 Найти товар</button></div>
-</section>
-<section id="admin" class="card hidden">
-<div style="display:flex;gap:7px;flex-wrap:wrap"><button class="btn primary" id="new">＋ Новый товар</button><button class="btn ghost" id="logout">Выйти</button></div>
-<div id="notice"></div>
-<div id="form" class="hidden"><h2 id="ft">Новый товар</h2><input type="hidden" id="eid">
-<label>Название</label><input class="input" id="name" autocomplete="off" placeholder="Coca-Cola 0.5 л">
-<label>Штрихкод</label><div class="barcode"><input class="input" id="code" inputmode="numeric" autocomplete="off" placeholder="Отсканируйте или введите"><button class="btn secondary" id="scanAdmin">📷</button></div>
-<div id="adminReader" class="hidden"></div>
-<label>Цена, ₸</label><input class="input" id="price" inputmode="decimal" placeholder="450">
-<label>Наличие</label><select id="stock" class="input"><option value="in">В наличии</option><option value="out">Нет в наличии</option></select>
-<div class="row" style="margin-top:13px"><button class="btn primary" id="save">Сохранить</button><button class="btn ghost" id="cancel">Отмена</button></div></div>
-<div id="list"></div>
-</section>
+  <h1>Проверка цены</h1>
+  <div class="subtitle">Сканируйте штрихкод напитка и узнайте актуальную цену.</div>
+  <div class="card">
+    <button class="bigScan" id="scanBtn">📷 Сканировать штрихкод</button>
+    <input id="barcodeInput" type="text" inputmode="numeric" autocomplete="off" placeholder="Или введите штрихкод">
+    <button class="secondary" id="findBtn">🔎 Найти товар</button>
+    <div class="cameraBox" id="cameraBox">
+      <video id="video" playsinline autoplay muted></video>
+      <button class="cameraClose" id="cameraClose">✕</button>
+    </div>
+    <div class="notice">Камера работает на HTTPS/localhost. Если камера недоступна, можно ввести штрихкод вручную.</div>
+    <div class="result" id="result"></div>
+  </div>
 </main>
-<dialog id="login"><div class="modal"><button class="close" id="close">×</button><h2>Вход администратора</h2><p class="muted">Нажмите на поле — клавиатура телефона появится автоматически.</p>
-<label>E-mail</label><input class="input" id="email" type="email" autocomplete="username" inputmode="email" placeholder="rafetdzhordanidze@gmail.com">
-<label>Пароль</label><input class="input" id="pass" type="password" autocomplete="current-password" placeholder="Введите пароль">
-<div id="loginMsg"></div><button class="btn primary full" id="loginBtn" style="margin-top:13px">Войти</button>
-<button class="btn ghost full" id="diagBtn" style="margin-top:8px">🛠 Проверить Firebase</button>
-<div id="diagMsg" class="muted" style="margin-top:8px"></div></div></dialog>
+
+<div class="overlay" id="adminOverlay">
+ <div class="modal">
+  <div class="modalHead">
+   <h2 id="modalTitle">Вход администратора</h2>
+   <button class="close" id="adminClose">✕</button>
+  </div>
+
+  <div id="loginBox">
+   <p style="color:#777">Нажмите на поле — клавиатура телефона появится автоматически.</p>
+   <label>E-mail</label>
+   <input id="email" type="email" inputmode="email" autocomplete="username" autocapitalize="none" placeholder="admin@gmail.com">
+   <label>Пароль</label>
+   <input id="password" type="password" inputmode="text" autocomplete="current-password" placeholder="Пароль">
+   <div class="error" id="loginError"></div>
+   <button class="primary" id="loginBtn">Войти</button>
+   <button class="secondary" id="checkBtn">🛠 Проверить Firebase</button>
+   <div class="diag" id="diagnostic">Firebase ещё не проверен.</div>
+  </div>
+
+  <div class="adminSection" id="adminPanel">
+   <div class="success" id="adminSuccess" style="display:block">Вы вошли как администратор.</div>
+   <div class="tabs">
+    <button class="tab active" data-tab="add">➕ Добавить товар</button>
+    <button class="tab" data-tab="products">📦 Товары</button>
+   </div>
+
+   <div id="addTab">
+    <label>Название товара</label>
+    <input id="pName" type="text" placeholder="Например: Coca-Cola 0.5 л">
+    <label>Штрихкод</label>
+    <input id="pBarcode" type="text" inputmode="numeric" placeholder="Введите или отсканируйте">
+    <button class="secondary" id="adminScanBtn">📷 Сканировать штрихкод камерой</button>
+    <label>Цена (₸)</label>
+    <input id="pPrice" type="number" inputmode="decimal" placeholder="500">
+    <div class="error" id="productError"></div>
+    <div class="success" id="productSuccess"></div>
+    <button class="primary" id="saveProduct">Сохранить товар</button>
+   </div>
+
+   <div id="productsTab" style="display:none">
+    <button class="secondary" id="reloadProducts">🔄 Обновить список</button>
+    <div id="productsList"></div>
+   </div>
+
+   <button class="secondary" id="logoutBtn">Выйти</button>
+  </div>
+ </div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-database-compat.js"></script>
 
 <script>
-const firebaseConfig={apiKey:"AIzaSyBb2gLGBAPtWIXF-Qv2em7S2EwdTLQ0w2A",authDomain:"firkaan.firebaseapp.com",databaseURL:"https://firkaan-default-rtdb.asia-southeast1.firebasedatabase.app",projectId:"firkaan",storageBucket:"firkaan.firebasestorage.app",messagingSenderId:"369015493396",appId:"1:369015493396:web:da9201c4ca1de513c7e801"};
-const ADMIN="rafetdzhordanidze@gmail.com";firebase.initializeApp(firebaseConfig);const auth=firebase.auth(),db=firebase.database();let products={},scanner=null,adminScanner=null;
-const $=x=>document.getElementById(x), money=x=>Number(x||0).toLocaleString("ru-RU")+" ₸";
-function find(code){code=String(code).replace(/\D/g,"");return Object.entries(products).find(x=>String(x[1].barcode||"").replace(/\D/g,"")===code)}
-function result(p,c){$("result").classList.remove("hidden");$("rName").textContent=p.name;$("rPrice").textContent=money(p.price);$("rCode").textContent="Штрихкод: "+c;$("rStock").innerHTML=p.stock==="out"?'<span class="stock out">Нет в наличии</span>':'<span class="stock">✓ В наличии</span>'}
-function search(c){let x=find(c);if(x)result(x[1],c);else{$("result").classList.add("hidden");$("scanMsg").textContent="Товар не найден."}}
-function stop(type){try{if(type==="c"&&scanner){scanner.clear();scanner=null;$("reader").classList.add("hidden")}if(type==="a"&&adminScanner){adminScanner.clear();adminScanner=null;$("adminReader").classList.add("hidden")}}catch(e){}}
-function start(type){if(typeof Html5Qrcode==="undefined"){alert("Сканер загружается, попробуйте ещё раз.");return}let id=type==="c"?"reader":"adminReader",s=new Html5Qrcode(id);if(type==="c"){scanner=s}else adminScanner=s;$(id).classList.remove("hidden");s.start({facingMode:"environment"},{fps:10,qrbox:{width:250,height:120}},code=>{if(type==="c"){search(code);$("scanMsg").textContent="Штрихкод считан.";stop("c")}else{$("code").value=code;stop("a")}},()=>{}).catch(()=>{stop(type);alert("Не удалось открыть камеру. Разрешите камеру и используйте HTTPS.")})}
-$("scan").onclick=()=>start("c");$("find").onclick=()=>search($("manual").value);$("manual").onkeydown=e=>{if(e.key==="Enter")search(e.target.value)};
-$("adminOpen").onclick=()=>{if(auth.currentUser?.email===ADMIN){$("admin").scrollIntoView({behavior:"smooth"})}else{$("login").showModal();setTimeout(()=>$("email").focus(),100)}};
-$("close").onclick=()=>$("login").close();
-$("diagBtn").onclick=async()=>{
-  const tests=[];
-  tests.push("Firebase App: "+(firebase.apps.length?"подключён":"НЕ подключён"));
-  tests.push("Project ID: "+firebase.app().options.projectId);
-  tests.push("Auth domain: "+firebase.app().options.authDomain);
-  tests.push("Database URL: "+firebase.app().options.databaseURL);
-  try{
-    await db.ref("products").limitToFirst(1).once("value");
-    tests.push("Realtime Database: доступна");
-    $("diagMsg").innerHTML='<div class="notice success"><b>Диагностика</b><br>'+tests.map(esc).join("<br>")+'</div>';
-  }catch(err){
-    tests.push("Realtime Database ERROR: "+(err.code||"unknown")+" — "+(err.message||err));
-    $("diagMsg").innerHTML='<div class="notice error"><b>Диагностика</b><br>'+tests.map(esc).join("<br>")+'</div>';
-  }
+/* =========================
+   FIRKAANN FIREBASE CONFIG
+   ========================= */
+const firebaseConfig = {
+  apiKey: "AIzaSyBb2gLGBAPtWiXf-Qv2em7S2EwdTLQ0w2A",
+  authDomain: "firkaan.firebaseapp.com",
+  projectId: "firkaan",
+  storageBucket: "firkaan.firebasestorage.app",
+  messagingSenderId: "369015493396",
+  appId: "1:369015493396:web:da9201c4ca1de513c7e801",
+  measurementId: "G-8NH2JHKEJD"
 };
-$("close").onclick=()=>$("login").close();$("loginBtn").onclick=async()=>{let e=$("email").value.trim(),p=$("pass").value;if(!e||!p){$("loginMsg").innerHTML='<div class="notice error">Введите e-mail и пароль.</div>';return}try{
-  let u=await auth.signInWithEmailAndPassword(e,p);
-  console.log("FIRKAANN LOGIN OK:",u.user.email,u.user.uid);
-  if(u.user.email.toLowerCase()!==ADMIN.toLowerCase()){
-    await auth.signOut();
-    $("loginMsg").innerHTML='<div class="notice error"><b>Firebase вход выполнен, но этот e-mail не является администратором.</b><br>E-mail аккаунта: '+esc(u.user.email)+'<br>Ожидается: '+esc(ADMIN)+'</div>';
-    return;
+
+let firebaseReady = false;
+let auth = null;
+let db = null;
+let scannerStream = null;
+let barcodeDetector = null;
+let scanTarget = "public";
+
+function setError(id, text){
+  const el=document.getElementById(id);
+  el.textContent=text;
+  el.style.display=text?"block":"none";
+}
+function setSuccess(id,text){
+  const el=document.getElementById(id);
+  el.textContent=text;
+  el.style.display=text?"block":"none";
+}
+
+try{
+  firebase.initializeApp(firebaseConfig);
+  auth=firebase.auth();
+  db=firebase.database();
+  firebaseReady=true;
+}catch(e){
+  console.error(e);
+}
+
+function firebaseError(e){
+  const code=e && e.code ? e.code : "unknown";
+  let meaning="";
+  switch(code){
+    case "auth/invalid-api-key": meaning="Неверный Firebase API key. Проверьте конфигурацию сайта."; break;
+    case "auth/invalid-credential": meaning="Неверный e-mail или пароль."; break;
+    case "auth/user-not-found": meaning="Такого пользователя нет в Firebase Authentication."; break;
+    case "auth/wrong-password": meaning="Пароль неверный."; break;
+    case "auth/invalid-email": meaning="Неверный формат e-mail."; break;
+    case "auth/network-request-failed": meaning="Нет соединения с Firebase. Проверьте интернет."; break;
+    case "auth/too-many-requests": meaning="Слишком много попыток. Подождите немного."; break;
+    case "PERMISSION_DENIED": meaning="Firebase Realtime Database отклонила запрос. Проверьте Rules."; break;
+    default: meaning=e?.message || "Неизвестная ошибка Firebase.";
   }
-  $("loginMsg").innerHTML='<div class="notice success">Вход выполнен. Открываю админ-панель...</div>';
-  setTimeout(()=>$("login").close(),300);
-}catch(err){
-  console.error("FIRKAANN LOGIN ERROR:",err);
-  let code=err && err.code ? err.code : "unknown";
-  let msg=err && err.message ? err.message : String(err);
-  let help={
-    "auth/invalid-credential":"Firebase отклонил данные входа. Проверьте e-mail и пароль.",
-    "auth/invalid-login-credentials":"Firebase отклонил данные входа. Проверьте e-mail и пароль.",
-    "auth/wrong-password":"Неверный пароль.",
-    "auth/user-not-found":"Пользователь с таким e-mail не найден.",
-    "auth/invalid-email":"Неверный формат e-mail.",
-    "auth/user-disabled":"Этот пользователь отключён в Firebase.",
-    "auth/too-many-requests":"Слишком много попыток входа. Подождите немного и попробуйте снова.",
-    "auth/network-request-failed":"Нет соединения с Firebase. Проверьте интернет.",
-    "auth/operation-not-allowed":"В Firebase не включён вход Email/Password."
-  };
-  $("loginMsg").innerHTML='<div class="notice error"><b>Ошибка Firebase</b><br><br><b>Код:</b> '+esc(code)+'<br><b>Сообщение:</b> '+esc(msg)+'<br><br><b>Что это значит:</b> '+esc(help[code]||"Неизвестная ошибка. Нажмите «Проверить Firebase» или откройте F12 → Console.")+'</div>';
-}};
-$("logout").onclick=()=>auth.signOut();$("scanAdmin").onclick=()=>start("a");
-auth.onAuthStateChanged(u=>{if(u?.email===ADMIN){$("admin").classList.remove("hidden");render()}else $("admin").classList.add("hidden")});
-db.ref("products").on("value",s=>{products=s.val()||{};render()});
-$("new").onclick=()=>{clearForm();$("form").classList.remove("hidden");$("name").focus()};$("cancel").onclick=()=>{$("form").classList.add("hidden");clearForm()};
-function clearForm(){$("eid").value="";$("name").value="";$("code").value="";$("price").value="";$("stock").value="in";$("ft").textContent="Новый товар"}
-$("save").onclick=async()=>{let n=$("name").value.trim(),c=$("code").value.replace(/\D/g,""),p=Number($("price").value),st=$("stock").value,id=$("eid").value;if(!n||!c||!Number.isFinite(p)){alert("Заполните название, штрихкод и цену.");return}let d=find(c);if(d&&d[0]!==id){alert("Такой штрихкод уже есть.");return}let data={name:n,barcode:c,price:p,stock:st,updatedAt:Date.now()};try{if(id)await db.ref("products/"+id).update(data);else await db.ref("products").push({...data,createdAt:Date.now()});$("form").classList.add("hidden");clearForm();$("notice").innerHTML='<div class="notice success">Товар сохранён.</div>'}catch(e){$("notice").innerHTML='<div class="notice error">Ошибка сохранения.</div>'}};
-function esc(s){return String(s).replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]))}
-function render(){let a=Object.entries(products);if(!a.length){$("list").innerHTML='<div class="notice">Товаров пока нет.</div>';return}$("list").innerHTML="<h2>Товары ("+a.length+")</h2>"+a.map(([id,p])=>'<div class="item"><b>'+esc(p.name)+'</b><div class="muted">'+esc(p.barcode)+' · '+money(p.price)+' · '+(p.stock==="out"?"Нет в наличии":"В наличии")+'</div><div class="actions"><button class="btn secondary" onclick="editP(\''+id+'\')">✏️ Изменить</button><button class="btn danger" onclick="delP(\''+id+'\')">🗑️ Удалить</button></div></div>').join("")}
-window.editP=id=>{let p=products[id];$("eid").value=id;$("name").value=p.name;$("code").value=p.barcode;$("price").value=p.price;$("stock").value=p.stock||"in";$("ft").textContent="Изменить товар";$("form").classList.remove("hidden");$("name").focus()};
-window.delP=async id=>{if(confirm("Удалить товар?"))await db.ref("products/"+id).remove()};
+  return "Ошибка Firebase\nКод: "+code+"\nСообщение: "+(e?.message||"")+"\n\nЧто это значит: "+meaning;
+}
+
+async function runDiagnostics(){
+  const d=document.getElementById("diagnostic");
+  d.innerHTML="Проверка Firebase...";
+  if(!firebaseReady){d.textContent="❌ Firebase SDK не запустился.";return;}
+  let out=[];
+  out.push("✅ Firebase App: подключён");
+  out.push("Project ID: "+firebaseConfig.projectId);
+  out.push("Auth domain: "+firebaseConfig.authDomain);
+  try{
+    await auth.signInAnonymously();
+    out.push("✅ Firebase Authentication: доступна");
+    await auth.signOut();
+  }catch(e){
+    if(e.code==="auth/admin-restricted-operation")
+      out.push("⚠️ Анонимная авторизация отключена — это нормально для входа администратора.");
+    else
+      out.push("⚠️ Authentication: "+e.code);
+  }
+  try{
+    await db.ref(".info/connected").once("value");
+    out.push("✅ Realtime Database: доступна");
+  }catch(e){
+    out.push("❌ Realtime Database: "+firebaseError(e));
+  }
+  d.textContent=out.join("\n");
+}
+
+document.getElementById("checkBtn").onclick=runDiagnostics;
+
+document.getElementById("adminOpen").onclick=()=>{
+  document.getElementById("adminOverlay").classList.add("show");
+  setTimeout(()=>document.getElementById("email").focus(),150);
+};
+document.getElementById("adminClose").onclick=closeAdmin;
+document.getElementById("adminOverlay").addEventListener("click",e=>{
+ if(e.target.id==="adminOverlay") closeAdmin();
+});
+function closeAdmin(){document.getElementById("adminOverlay").classList.remove("show");}
+
+document.getElementById("loginBtn").onclick=async()=>{
+ setError("loginError","");
+ const email=document.getElementById("email").value.trim();
+ const password=document.getElementById("password").value;
+ if(!email||!password){setError("loginError","Введите e-mail и пароль.");return;}
+ if(!firebaseReady){setError("loginError","Firebase не подключён. Нажмите «Проверить Firebase».");return;}
+ const btn=document.getElementById("loginBtn");
+ btn.disabled=true; btn.textContent="Вход...";
+ try{
+   await auth.signInWithEmailAndPassword(email,password);
+   document.getElementById("loginBox").style.display="none";
+   document.getElementById("adminPanel").style.display="block";
+   document.getElementById("modalTitle").textContent="Панель администратора";
+   loadProducts();
+ }catch(e){
+   console.error(e);
+   setError("loginError",firebaseError(e));
+ }finally{
+   btn.disabled=false; btn.textContent="Войти";
+ }
+};
+
+auth && auth.onAuthStateChanged(user=>{
+ if(user){
+   console.log("Firebase user:",user.uid,user.email);
+ }
+});
+
+document.getElementById("logoutBtn").onclick=async()=>{
+ try{await auth.signOut();}catch(e){}
+ document.getElementById("adminPanel").style.display="none";
+ document.getElementById("loginBox").style.display="block";
+ document.getElementById("modalTitle").textContent="Вход администратора";
+};
+
+document.querySelectorAll(".tab").forEach(btn=>{
+ btn.onclick=()=>{
+   document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));
+   btn.classList.add("active");
+   const tab=btn.dataset.tab;
+   document.getElementById("addTab").style.display=tab==="add"?"block":"none";
+   document.getElementById("productsTab").style.display=tab==="products"?"block":"none";
+   if(tab==="products") loadProducts();
+ };
+});
+
+async function saveProduct(){
+ setError("productError","");setSuccess("productSuccess","");
+ const name=document.getElementById("pName").value.trim();
+ const barcode=document.getElementById("pBarcode").value.trim();
+ const price=document.getElementById("pPrice").value.trim();
+ if(!name||!barcode||!price){setError("productError","Заполните название, штрихкод и цену.");return;}
+ if(!auth.currentUser){setError("productError","Сначала войдите в администратора.");return;}
+ try{
+   const safeKey=barcode.replace(/[.#$\\[\\]/]/g,"_");
+   await db.ref("products/"+safeKey).set({
+     name:name,
+     barcode:barcode,
+     price:Number(price),
+     updatedAt:firebase.database.ServerValue.TIMESTAMP,
+     updatedBy:auth.currentUser.email||"admin"
+   });
+   setSuccess("productSuccess","Товар сохранён в Firebase.");
+   document.getElementById("pName").value="";
+   document.getElementById("pBarcode").value="";
+   document.getElementById("pPrice").value="";
+   loadProducts();
+ }catch(e){setError("productError",firebaseError(e));}
+}
+document.getElementById("saveProduct").onclick=saveProduct;
+document.getElementById("reloadProducts").onclick=loadProducts;
+
+async function loadProducts(){
+ const box=document.getElementById("productsList");
+ box.innerHTML="<p>Загрузка...</p>";
+ try{
+   const snap=await db.ref("products").once("value");
+   const data=snap.val()||{};
+   const arr=Object.values(data);
+   if(!arr.length){box.innerHTML="<p style='color:#777'>Товаров пока нет.</p>";return;}
+   box.innerHTML="";
+   arr.sort((a,b)=>(a.name||"").localeCompare(b.name||"")).forEach(p=>{
+     const row=document.createElement("div");row.className="productRow";
+     row.innerHTML="<div class='productInfo'><div class='productName'></div><div class='small'></div><div class='price' style='font-size:20px'></div></div>";
+     row.querySelector(".productName").textContent=p.name||"Без названия";
+     row.querySelector(".small").textContent="Штрихкод: "+(p.barcode||"");
+     row.querySelector(".price").textContent=(Number(p.price)||0).toLocaleString("ru-RU")+" ₸";
+     box.appendChild(row);
+   });
+ }catch(e){box.innerHTML="<div class='error' style='display:block'>"+firebaseError(e)+"</div>";}
+}
+
+async function findProduct(code){
+ code=(code||"").trim();
+ if(!code){setError("loginError","");return;}
+ const result=document.getElementById("result");
+ result.classList.add("show");
+ result.innerHTML="Поиск...";
+ try{
+   const safeKey=code.replace(/[.#$\\[\\]/]/g,"_");
+   const snap=await db.ref("products/"+safeKey).once("value");
+   const p=snap.val();
+   if(!p){
+     result.innerHTML="<b>Товар не найден</b><br><span style='color:#777'>Штрихкод: "+escapeHtml(code)+"</span>";
+     return;
+   }
+   result.innerHTML="<div style='font-size:20px;font-weight:800'>"+escapeHtml(p.name)+"</div><div class='small'>Штрихкод: "+escapeHtml(p.barcode)+"</div><div class='price'>"+Number(p.price).toLocaleString("ru-RU")+" ₸</div>";
+ }catch(e){
+   result.innerHTML="<b>Ошибка Firebase</b><br>"+escapeHtml(firebaseError(e));
+ }
+}
+document.getElementById("findBtn").onclick=()=>findProduct(document.getElementById("barcodeInput").value);
+document.getElementById("barcodeInput").addEventListener("keydown",e=>{if(e.key==="Enter")findProduct(e.target.value)});
+
+function escapeHtml(s){
+ return String(s).replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]));
+}
+
+async function startScanner(target){
+ scanTarget=target;
+ const cameraBox=document.getElementById("cameraBox");
+ const video=document.getElementById("video");
+ cameraBox.style.display="block";
+ try{
+   scannerStream=await navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:"environment"}},audio:false});
+   video.srcObject=scannerStream;
+   if("BarcodeDetector" in window){
+     try{barcodeDetector=new BarcodeDetector({formats:["ean_13","ean_8","upc_a","upc_e","code_128","code_39","itf"]});}
+     catch(e){barcodeDetector=null;}
+   }
+   if(barcodeDetector) detectLoop();
+   else{
+     alert("Этот браузер не поддерживает автоматическое распознавание штрихкода. Введите код вручную.");
+   }
+ }catch(e){
+   cameraBox.style.display="none";
+   alert("Не удалось открыть камеру. Разрешите доступ к камере в браузере и используйте HTTPS.");
+ }
+}
+async function detectLoop(){
+ if(!scannerStream||!barcodeDetector)return;
+ const video=document.getElementById("video");
+ try{
+   const codes=await barcodeDetector.detect(video);
+   if(codes.length){
+     const code=codes[0].rawValue;
+     if(scanTarget==="admin") document.getElementById("pBarcode").value=code;
+     else {document.getElementById("barcodeInput").value=code;findProduct(code);}
+     stopScanner();return;
+   }
+ }catch(e){}
+ requestAnimationFrame(detectLoop);
+}
+function stopScanner(){
+ if(scannerStream){scannerStream.getTracks().forEach(t=>t.stop());scannerStream=null;}
+ document.getElementById("cameraBox").style.display="none";
+}
+document.getElementById("scanBtn").onclick=()=>startScanner("public");
+document.getElementById("adminScanBtn").onclick=()=>startScanner("admin");
+document.getElementById("cameraClose").onclick=stopScanner;
+
+if(location.protocol!=="https:" && location.hostname!=="localhost"){
+ console.warn("Камера может не работать без HTTPS.");
+}
 </script>
 </body>
 </html>
