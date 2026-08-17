@@ -1,817 +1,869 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-<meta charset="UTF-8">
-
-<meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
->
-
-<meta name="theme-color" content="#ef8624">
-
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
-
-<title>Firkaan — Проверка цен</title>
-
-<!-- ZXing для распознавания штрихкодов -->
-<script src="https://unpkg.com/@zxing/browser@0.1.5/umd/index.min.js"></script>
-
-<style>
-
-/* =========================================================
-   ОСНОВНЫЕ ЦВЕТА
-========================================================= */
-
-:root {
-    --orange: #ef8624;
-    --orange2: #f5a13b;
-    --orange-dark: #d86f10;
-    --orange-light: #fff1df;
-
-    --white: #ffffff;
-    --black: #151515;
-
-    --gray: #777777;
-    --gray2: #eeeeee;
-
-    --green: #16803c;
-    --green-bg: #eaf8ef;
-
-    --red: #c62828;
-    --red-bg: #ffebee;
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width,
+                 initial-scale=1,
+                 maximum-scale=1,
+                 viewport-fit=cover"
+    >
+
+    <meta name="theme-color" content="#f28c28">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+
+    <title>Firkaan — Проверка цен</title>
+
+    <!-- =========================================================
+         ZXING — СКАНЕР ШТРИХКОДОВ
+         ========================================================= -->
+    <script src="https://unpkg.com/@zxing/browser@latest"></script>
+
+    <style>
+        /* =====================================================
+           ОСНОВНЫЕ СТИЛИ
+           ===================================================== */
+
+        * {
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        html {
+            min-height: 100%;
+            background: #f5f5f5;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            font-family:
+                -apple-system,
+                BlinkMacSystemFont,
+                "SF Pro Display",
+                "SF Pro Text",
+                Arial,
+                sans-serif;
+            background:
+                linear-gradient(
+                    180deg,
+                    #fff8ee 0%,
+                    #f7f7f7 260px,
+                    #f4f4f4 100%
+                );
+            color: #191919;
+        }
+
+        button,
+        input {
+            font: inherit;
+        }
+
+        button {
+            cursor: pointer;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        /* =====================================================
+           HEADER
+           ===================================================== */
+
+        .header {
+            background:
+                linear-gradient(
+                    145deg,
+                    #f6b45d 0%,
+                    #f28c28 55%,
+                    #ed8120 100%
+                );
+
+            color: white;
+
+            padding:
+                calc(env(safe-area-inset-top) + 24px)
+                24px
+                30px;
+
+            border-radius:
+                0
+                0
+                38px
+                38px;
+
+            box-shadow:
+                0 12px 30px rgba(232, 126, 29, 0.20);
+        }
+
+        .header-inner {
+            max-width: 900px;
+            margin: auto;
+
+            display: flex;
+            align-items: center;
+            gap: 18px;
+        }
+
+        .logo {
+            width: 72px;
+            height: 72px;
+
+            flex: 0 0 72px;
+
+            background: white;
+            color: #ee8525;
 
-    --shadow: 0 10px 35px rgba(0,0,0,.08);
-}
+            border-radius: 24px;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            font-size: 43px;
+            font-weight: 900;
+
+            box-shadow:
+                0 8px 20px rgba(0, 0, 0, 0.10);
+        }
+
+        .header-title {
+            min-width: 0;
+        }
+
+        .header-title h1 {
+            margin: 0;
+            font-size: 34px;
+            line-height: 1.05;
+            font-weight: 850;
+            letter-spacing: -1px;
+        }
+
+        .header-title p {
+            margin: 8px 0 0;
+            font-size: 18px;
+            opacity: 0.95;
+        }
 
-/* =========================================================
-   RESET
-========================================================= */
+        /* =====================================================
+           CONTAINER
+           ===================================================== */
 
-* {
-    box-sizing: border-box;
-    -webkit-tap-highlight-color: transparent;
-}
+        .container {
+            width: min(900px, calc(100% - 30px));
+            margin: 28px auto 60px;
+        }
 
-html {
-    scroll-behavior: smooth;
-}
+        /* =====================================================
+           CARD
+           ===================================================== */
 
-body {
-    margin: 0;
-    padding: 0;
-    background: #f5f5f5;
-    color: var(--black);
+        .card {
+            background: white;
+            border-radius: 30px;
+            padding: 25px;
+            margin-bottom: 20px;
 
-    font-family:
-        -apple-system,
-        BlinkMacSystemFont,
-        "SF Pro Display",
-        "SF Pro Text",
-        "Segoe UI",
-        Arial,
-        sans-serif;
-}
+            box-shadow:
+                0 10px 35px rgba(0, 0, 0, 0.07);
+        }
 
-button,
-input {
-    font-family: inherit;
-}
+        .card-title {
+            margin: 0 0 8px;
+            font-size: 27px;
+            font-weight: 800;
+        }
 
-button {
-    cursor: pointer;
-}
+        .card-subtitle {
+            margin: 0 0 24px;
+            color: #777;
+            font-size: 16px;
+            line-height: 1.5;
+        }
 
-/* =========================================================
-   APP
-========================================================= */
+        /* =====================================================
+           MAIN SCAN AREA
+           ===================================================== */
 
-.app {
-    width: 100%;
-    max-width: 650px;
-    min-height: 100vh;
-    margin: 0 auto;
-    background: #f6f6f6;
-}
+        .scan-box {
+            background:
+                linear-gradient(
+                    145deg,
+                    #fff6e7,
+                    #fffaf3
+                );
+
+            border: 1px solid #ffe5c6;
+
+            border-radius: 26px;
+
+            padding: 24px;
+
+            text-align: center;
+        }
+
+        .scan-icon {
+            width: 90px;
+            height: 90px;
+
+            margin: 0 auto 16px;
+
+            border-radius: 28px;
+
+            background: #f28c28;
+            color: white;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+
+            font-size: 45px;
+        }
+
+        .scan-box h2 {
+            margin: 0 0 8px;
+            font-size: 25px;
+        }
 
-/* =========================================================
-   HEADER
-========================================================= */
+        .scan-box p {
+            margin: 0 0 20px;
+            color: #777;
+            line-height: 1.5;
+        }
 
-.header {
-    padding: 32px 24px 34px;
+        /* =====================================================
+           BUTTONS
+           ===================================================== */
 
-    color: white;
+        .btn {
+            border: 0;
 
-    background:
-        linear-gradient(
-            135deg,
-            #f6a13a,
-            #ed7d16
-        );
+            border-radius: 18px;
 
-    border-radius:
-        0 0 35px 35px;
+            min-height: 56px;
 
-    box-shadow:
-        0 8px 25px rgba(239,134,36,.25);
-}
+            padding: 14px 20px;
 
-.header-content {
-    display: flex;
-    align-items: center;
-    gap: 18px;
-}
+            font-weight: 750;
 
-.logo {
-    width: 72px;
-    height: 72px;
+            transition:
+                transform .15s ease,
+                opacity .15s ease,
+                box-shadow .15s ease;
+        }
 
-    flex-shrink: 0;
+        .btn:active {
+            transform: scale(.97);
+        }
 
-    display: flex;
-    align-items: center;
-    justify-content: center;
+        .btn-primary {
+            width: 100%;
 
-    border-radius: 23px;
+            color: white;
 
-    background: white;
-    color: var(--orange);
+            background:
+                linear-gradient(
+                    135deg,
+                    #f39a39,
+                    #ed8120
+                );
 
-    font-size: 43px;
-    font-weight: 900;
+            box-shadow:
+                0 8px 20px rgba(238, 132, 32, .25);
+        }
 
-    box-shadow:
-        0 6px 18px rgba(0,0,0,.1);
-}
+        .btn-secondary {
+            background: #fff0dd;
+            color: #dc751d;
+        }
 
-.header-title {
-    margin: 0;
+        .btn-danger {
+            background: #fff0f0;
+            color: #d92f2f;
+        }
 
-    font-size: 35px;
-    line-height: 1.05;
-    font-weight: 800;
-}
+        .btn-dark {
+            background: #222;
+            color: white;
+        }
 
-.header-subtitle {
-    margin-top: 8px;
+        .btn-small {
+            min-height: 44px;
+            padding: 10px 14px;
+            border-radius: 14px;
+            font-size: 14px;
+        }
 
-    font-size: 17px;
-}
+        .button-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
 
-/* =========================================================
-   CONTENT
-========================================================= */
+        /* =====================================================
+           INPUT
+           ===================================================== */
 
-.content {
-    padding: 22px 18px 40px;
-}
+        .field {
+            margin-bottom: 17px;
+        }
 
-.card {
-    margin-bottom: 18px;
+        .field label {
+            display: block;
+            margin-bottom: 8px;
 
-    padding: 24px;
+            font-size: 15px;
+            font-weight: 750;
 
-    background: white;
+            color: #454545;
+        }
 
-    border-radius: 25px;
+        .input {
+            width: 100%;
 
-    box-shadow: var(--shadow);
-}
+            height: 56px;
 
-/* =========================================================
-   HERO
-========================================================= */
+            border:
+                2px solid #e5e5e5;
 
-.hero {
-    padding: 34px 22px;
+            border-radius: 17px;
 
-    text-align: center;
-}
+            padding:
+                0 16px;
 
-.scan-icon {
-    width: 88px;
-    height: 88px;
+            outline: none;
 
-    margin: 0 auto 18px;
+            background: #fafafa;
 
-    display: flex;
-    align-items: center;
-    justify-content: center;
+            color: #171717;
 
-    border-radius: 28px;
+            font-size: 17px;
 
-    background: var(--orange-light);
-    color: var(--orange);
+            transition:
+                border-color .15s ease,
+                background .15s ease;
+        }
 
-    font-size: 48px;
-}
+        .input:focus {
+            border-color: #f28c28;
+            background: white;
+        }
 
-.hero h2 {
-    margin: 0 0 10px;
+        /* =====================================================
+           PRICE RESULT
+           ===================================================== */
 
-    font-size: 28px;
-    font-weight: 800;
-}
+        .result {
+            margin-top: 20px;
 
-.description {
-    margin-bottom: 22px;
+            border-radius: 24px;
 
-    color: var(--gray);
+            padding: 24px;
 
-    font-size: 15px;
-    line-height: 1.55;
-}
+            text-align: center;
+        }
 
-/* =========================================================
-   BUTTONS
-========================================================= */
+        .result.success {
+            background: #effbf3;
+            border: 1px solid #c9efd5;
+        }
 
-.btn {
-    width: 100%;
+        .result.error {
+            background: #fff0f0;
+            border: 1px solid #ffd2d2;
+        }
 
-    padding: 16px 18px;
+        .result.loading {
+            background: #fff8ec;
+            border: 1px solid #ffe0b5;
+        }
 
-    border: none;
-    border-radius: 17px;
+        .result-name {
+            font-size: 23px;
+            font-weight: 800;
+            margin-bottom: 8px;
+        }
 
-    font-size: 17px;
-    font-weight: 750;
+        .result-price {
+            font-size: 42px;
+            font-weight: 900;
+            color: #e77e1e;
+        }
 
-    transition:
-        transform .12s ease,
-        opacity .12s ease;
-}
+        .result-barcode {
+            margin-top: 8px;
+            color: #777;
+            font-size: 14px;
+        }
 
-.btn:active {
-    transform: scale(.97);
-}
+        /* =====================================================
+           ADMIN
+           ===================================================== */
 
-.btn:disabled {
-    opacity: .6;
-}
+        .admin-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 15px;
 
-.btn-orange {
-    color: white;
+            margin-bottom: 20px;
+        }
 
-    background:
-        linear-gradient(
-            135deg,
-            var(--orange2),
-            var(--orange)
-        );
-}
+        .admin-email {
+            color: #777;
+            font-size: 14px;
+            word-break: break-all;
+        }
 
-.btn-light {
-    color: var(--orange-dark);
-    background: var(--orange-light);
-}
+        .admin-actions {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
 
-.btn-red {
-    color: var(--red);
-    background: var(--red-bg);
-}
+        /* =====================================================
+           PRODUCT LIST
+           ===================================================== */
 
-.btn-dark {
-    color: white;
-    background: #222;
-}
+        .product-list {
+            display: grid;
+            gap: 12px;
+        }
 
-/* =========================================================
-   INPUT
-========================================================= */
+        .product-item {
+            background: #fafafa;
 
-label {
-    display: block;
+            border:
+                1px solid #ededed;
 
-    margin-bottom: 7px;
+            border-radius: 20px;
 
-    color: #555;
+            padding: 16px;
 
-    font-size: 14px;
-    font-weight: 750;
-}
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
 
-.input {
-    width: 100%;
+            gap: 15px;
+        }
 
-    margin-bottom: 16px;
+        .product-info {
+            min-width: 0;
+        }
 
-    padding: 15px 16px;
+        .product-name {
+            font-size: 17px;
+            font-weight: 800;
 
-    border:
-        1px solid
-        #dddddd;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
 
-    border-radius: 15px;
+        .product-barcode {
+            margin-top: 5px;
 
-    outline: none;
+            color: #888;
 
-    background: white;
+            font-size: 13px;
+        }
 
-    color: #111;
+        .product-price {
+            margin-top: 4px;
 
-    font-size: 16px;
+            color: #e77e1e;
 
-    appearance: none;
-}
+            font-size: 19px;
+            font-weight: 850;
+        }
 
-.input:focus {
-    border-color: var(--orange);
+        .product-buttons {
+            display: flex;
+            gap: 7px;
+            flex-shrink: 0;
+        }
 
-    box-shadow:
-        0 0 0 4px
-        rgba(239,134,36,.12);
-}
+        /* =====================================================
+           LOGIN
+           ===================================================== */
 
-/* =========================================================
-   STATUS
-========================================================= */
+        .login-card {
+            max-width: 650px;
+            margin: 35px auto;
+        }
 
-.status {
-    display: none;
+        .login-icon {
+            width: 70px;
+            height: 70px;
 
-    margin-top: 15px;
+            border-radius: 22px;
 
-    padding: 14px 16px;
+            background: #fff0dd;
 
-    border-radius: 15px;
+            color: #e77e1e;
 
-    font-size: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
 
-    line-height: 1.5;
+            font-size: 35px;
 
-    white-space: pre-line;
-}
+            margin-bottom: 20px;
+        }
 
-.status.show {
-    display: block;
-}
+        /* =====================================================
+           SCANNER MODAL
+           ===================================================== */
 
-.status.success {
-    color: var(--green);
-    background: var(--green-bg);
-}
+        .scanner-overlay {
+            position: fixed;
+            inset: 0;
 
-.status.error {
-    color: var(--red);
-    background: var(--red-bg);
-}
+            z-index: 9999;
 
-.status.info {
-    color: #8a5a00;
-    background: #fff4dd;
-}
+            background: rgba(0, 0, 0, .96);
 
-/* =========================================================
-   RESULT
-========================================================= */
+            display: flex;
+            flex-direction: column;
 
-.result {
-    display: none;
-}
+            padding:
+                calc(env(safe-area-inset-top) + 15px)
+                15px
+                calc(env(safe-area-inset-bottom) + 20px);
+        }
 
-.result.active {
-    display: block;
-}
+        .scanner-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
 
-.result-label {
-    color: #888;
+            color: white;
 
-    font-size: 12px;
-    font-weight: 750;
+            padding: 5px 4px 15px;
+        }
 
-    letter-spacing: .5px;
-}
+        .scanner-title {
+            font-size: 21px;
+            font-weight: 800;
+        }
 
-.product-name {
-    margin-top: 7px;
+        .scanner-close {
+            width: 48px;
+            height: 48px;
 
-    font-size: 24px;
-    font-weight: 800;
-}
+            border: 0;
+            border-radius: 50%;
 
-.product-price {
-    margin: 8px 0;
+            background: rgba(255,255,255,.12);
 
-    color: var(--orange);
+            color: white;
 
-    font-size: 44px;
-    font-weight: 900;
-}
+            font-size: 30px;
+        }
 
-.product-barcode {
-    color: #777;
+        .scanner-content {
+            flex: 1;
 
-    font-family: monospace;
+            display: flex;
+            flex-direction: column;
 
-    font-size: 13px;
-}
+            align-items: center;
+            justify-content: center;
+        }
 
-/* =========================================================
-   ADMIN
-========================================================= */
+        .video-wrap {
+            width: min(600px, 100%);
 
-.admin-page {
-    display: none;
-}
+            aspect-ratio: 4 / 3;
 
-.admin-page.show {
-    display: block;
-}
+            position: relative;
 
-.admin-title {
-    margin: 0 0 10px;
+            overflow: hidden;
 
-    font-size: 30px;
-    line-height: 1.15;
-}
+            border-radius: 28px;
 
-.admin-description {
-    margin-bottom: 25px;
+            background: #111;
 
-    color: var(--gray);
+            border: 3px solid rgba(255,255,255,.65);
+        }
 
-    font-size: 15px;
-    line-height: 1.55;
-}
+        #scannerVideo {
+            width: 100%;
+            height: 100%;
 
-/* =========================================================
-   ADMIN USER
-========================================================= */
+            object-fit: cover;
 
-.admin-user {
-    display: flex;
+            display: block;
+        }
 
-    align-items: center;
-    justify-content: space-between;
+        .scanner-line {
+            position: absolute;
 
-    gap: 15px;
-}
+            left: 12%;
+            right: 12%;
 
-.admin-user-info {
-    min-width: 0;
-}
+            top: 50%;
 
-.admin-user-title {
-    font-size: 17px;
-    font-weight: 800;
-}
+            height: 3px;
 
-.admin-email {
-    margin-top: 5px;
+            background: #f28c28;
 
-    color: #777;
+            box-shadow:
+                0 0 15px #f28c28;
 
-    font-size: 13px;
+            animation:
+                scanLine 1.8s ease-in-out infinite;
+        }
 
-    word-break: break-word;
-}
+        @keyframes scanLine {
+            0%, 100% {
+                transform: translateY(-90px);
+            }
 
-.logout {
-    width: auto;
+            50% {
+                transform: translateY(90px);
+            }
+        }
 
-    padding: 11px 15px;
+        .scanner-hint {
+            color: rgba(255,255,255,.75);
 
-    white-space: nowrap;
+            text-align: center;
 
-    font-size: 14px;
-}
+            font-size: 15px;
 
-/* =========================================================
-   BARCODE ROW
-========================================================= */
+            margin-top: 18px;
 
-.barcode-row {
-    display: grid;
+            max-width: 500px;
 
-    grid-template-columns:
-        1fr
-        125px;
+            line-height: 1.5;
+        }
 
-    gap: 10px;
-}
+        .scanner-status {
+            color: white;
 
-.camera-button {
-    padding: 15px 8px;
+            margin-top: 15px;
 
-    font-size: 14px;
-}
+            text-align: center;
 
-/* =========================================================
-   PRODUCT LIST
-========================================================= */
+            min-height: 22px;
+        }
 
-.product-list {
-    margin-top: 15px;
-}
+        .scanner-bottom {
+            width: min(600px, 100%);
 
-.product-item {
-    padding: 16px 0;
+            margin: 18px auto 0;
+        }
 
-    border-bottom:
-        1px solid
-        #eeeeee;
-}
+        .camera-file {
+            width: 100%;
 
-.product-item:last-child {
-    border-bottom: none;
-}
+            height: 52px;
 
-.product-top {
-    display: flex;
+            border-radius: 17px;
 
-    justify-content: space-between;
+            background: white;
 
-    gap: 15px;
-}
+            color: #222;
 
-.product-item-name {
-    font-size: 16px;
-    font-weight: 750;
-}
+            display: flex;
+            align-items: center;
+            justify-content: center;
 
-.product-item-barcode {
-    margin-top: 5px;
+            font-weight: 750;
 
-    color: #888;
+            cursor: pointer;
+        }
 
-    font-family: monospace;
+        .camera-file input {
+            display: none;
+        }
 
-    font-size: 12px;
-}
+        /* =====================================================
+           TOAST
+           ===================================================== */
 
-.product-item-price {
-    color: var(--orange);
+        .toast {
+            position: fixed;
 
-    font-size: 17px;
-    font-weight: 850;
+            left: 15px;
+            right: 15px;
 
-    white-space: nowrap;
-}
+            bottom:
+                calc(env(safe-area-inset-bottom) + 20px);
 
-.product-actions {
-    display: grid;
+            z-index: 10000;
 
-    grid-template-columns:
-        1fr
-        1fr;
+            max-width: 600px;
 
-    gap: 8px;
+            margin: auto;
 
-    margin-top: 12px;
-}
+            padding: 16px 18px;
 
-.product-actions button {
-    padding: 10px;
+            border-radius: 18px;
 
-    font-size: 14px;
-}
+            color: white;
 
-/* =========================================================
-   ADMIN LINK
-========================================================= */
+            background: #222;
 
-.admin-link {
-    margin: 26px 0 10px;
+            box-shadow:
+                0 10px 30px rgba(0,0,0,.25);
 
-    text-align: center;
+            font-weight: 650;
 
-    color: #777;
+            animation:
+                toastIn .2s ease;
+        }
 
-    font-size: 14px;
+        @keyframes toastIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
 
-    text-decoration: underline;
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
 
-    cursor: pointer;
-}
+        /* =====================================================
+           SPINNER
+           ===================================================== */
 
-/* =========================================================
-   SCANNER
-========================================================= */
+        .spinner {
+            width: 22px;
+            height: 22px;
 
-.scanner {
-    position: fixed;
+            border:
+                3px solid rgba(255,255,255,.4);
 
-    inset: 0;
+            border-top-color: white;
 
-    z-index: 99999;
+            border-radius: 50%;
 
-    display: none;
+            display: inline-block;
 
-    background: #000;
-}
+            animation: spin .7s linear infinite;
 
-.scanner.show {
-    display: block;
-}
+            vertical-align: middle;
 
-.scanner video {
-    position: absolute;
+            margin-right: 8px;
+        }
 
-    inset: 0;
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
 
-    width: 100%;
-    height: 100%;
+        /* =====================================================
+           FOOTER
+           ===================================================== */
 
-    object-fit: cover;
-}
+        .footer {
+            text-align: center;
 
-.scanner-overlay {
-    position: absolute;
+            color: #aaa;
 
-    inset: 0;
+            font-size: 14px;
 
-    display: flex;
+            padding:
+                20px
+                0
+                calc(env(safe-area-inset-bottom) + 20px);
+        }
 
-    flex-direction: column;
+        /* =====================================================
+           RESPONSIVE
+           ===================================================== */
 
-    justify-content: space-between;
+        @media (max-width: 600px) {
 
-    padding:
-        25px
-        18px
-        35px;
+            .header {
+                padding-left: 18px;
+                padding-right: 18px;
+            }
 
-    color: white;
+            .logo {
+                width: 62px;
+                height: 62px;
+                flex-basis: 62px;
+                border-radius: 21px;
+                font-size: 36px;
+            }
 
-    pointer-events: none;
-}
+            .header-title h1 {
+                font-size: 29px;
+            }
 
-.scanner-top {
-    display: flex;
+            .header-title p {
+                font-size: 16px;
+            }
 
-    align-items: center;
-    justify-content: space-between;
-}
+            .container {
+                width: min(
+                    100% - 20px,
+                    900px
+                );
 
-.scanner-title {
-    padding: 10px 14px;
+                margin-top: 20px;
+            }
 
-    border-radius: 14px;
+            .card {
+                border-radius: 25px;
+                padding: 20px;
+            }
 
-    background:
-        rgba(0,0,0,.55);
+            .button-row,
+            .admin-actions {
+                grid-template-columns: 1fr;
+            }
 
-    font-size: 18px;
-    font-weight: 800;
-}
+            .product-item {
+                align-items: flex-start;
+                flex-direction: column;
+            }
 
-.close-scanner {
-    width: 48px;
-    height: 48px;
+            .product-buttons {
+                width: 100%;
+            }
 
-    border: none;
+            .product-buttons .btn {
+                flex: 1;
+            }
 
-    border-radius: 50%;
-
-    color: white;
-
-    background:
-        rgba(0,0,0,.65);
-
-    font-size: 30px;
-
-    pointer-events: auto;
-}
-
-.scan-frame {
-    width: 84%;
-    height: 170px;
-
-    margin: auto;
-
-    border:
-        3px solid
-        white;
-
-    border-radius: 20px;
-
-    box-shadow:
-        0 0 0 9999px
-        rgba(0,0,0,.42);
-}
-
-.scanner-hint {
-    padding: 14px;
-
-    border-radius: 15px;
-
-    text-align: center;
-
-    background:
-        rgba(0,0,0,.7);
-
-    font-size: 14px;
-
-    line-height: 1.4;
-}
-
-/* =========================================================
-   SPINNER
-========================================================= */
-
-.spinner {
-    display: inline-block;
-
-    width: 18px;
-    height: 18px;
-
-    margin-right: 5px;
-
-    border:
-        2px solid
-        rgba(255,255,255,.5);
-
-    border-top-color: white;
-
-    border-radius: 50%;
-
-    animation:
-        spin .7s
-        linear infinite;
-
-    vertical-align: -4px;
-}
-
-@keyframes spin {
-    to {
-        transform: rotate(360deg);
-    }
-}
-
-/* =========================================================
-   FOOTER
-========================================================= */
-
-.footer {
-    padding: 5px 0 35px;
-
-    text-align: center;
-
-    color: #999;
-
-    font-size: 13px;
-}
-
-/* =========================================================
-   HIDDEN
-========================================================= */
-
-.hidden {
-    display: none !important;
-}
-
-/* =========================================================
-   DESKTOP
-========================================================= */
-
-@media (min-width: 700px) {
-
-    body {
-        padding: 25px 0;
-    }
-
-    .app {
-        overflow: hidden;
-
-        border-radius: 30px;
-
-        box-shadow:
-            0 15px 50px
-            rgba(0,0,0,.12);
-    }
-}
-
-</style>
+            .result-price {
+                font-size: 36px;
+            }
+        }
+    </style>
 </head>
 
 <body>
 
-<div class="app">
-
-<!-- =====================================================
+<!-- =========================================================
      HEADER
-===================================================== -->
+     ========================================================= -->
 
 <header class="header">
 
-    <div class="header-content">
+    <div class="header-inner">
 
         <div class="logo">
             F
         </div>
 
-        <div>
+        <div class="header-title">
 
-            <h1 class="header-title">
-                Firkaan
-            </h1>
+            <h1>Firkaan</h1>
 
-            <div class="header-subtitle">
+            <p>
                 Система проверки цен
-            </div>
+            </p>
 
         </div>
 
@@ -820,231 +872,51 @@ label {
 </header>
 
 
-<main class="content">
+<!-- =========================================================
+     MAIN
+     ========================================================= -->
 
-<!-- =====================================================
-     СТРАНИЦА ПОКУПАТЕЛЯ
-===================================================== -->
+<main class="container">
 
-<section id="customerPage">
 
-    <div class="card hero">
+    <!-- =====================================================
+         ГЛАВНАЯ
+         ===================================================== -->
 
-        <div class="scan-icon">
-            ▦
-        </div>
-
-        <h2>
-            Узнать цену товара
-        </h2>
-
-        <div class="description">
-
-            Наведите камеру телефона
-            на штрихкод товара.
-            Сайт автоматически найдёт
-            товар и покажет его цену.
-
-        </div>
-
-        <button
-            id="scanCustomerButton"
-            class="btn btn-orange">
-
-            📷 Сканировать штрихкод
-
-        </button>
-
-        <div
-            id="customerStatus"
-            class="status">
-        </div>
-
-    </div>
-
-
-    <!-- РЕЗУЛЬТАТ -->
-
-    <div
-        id="resultCard"
-        class="card result">
-
-        <div class="result-label">
-            ТОВАР НАЙДЕН
-        </div>
-
-        <div
-            id="resultName"
-            class="product-name">
-
-            —
-
-        </div>
-
-        <div
-            id="resultPrice"
-            class="product-price">
-
-            — ₸
-
-        </div>
-
-        <div
-            id="resultBarcode"
-            class="product-barcode">
-
-            —
-
-        </div>
-
-    </div>
-
-
-    <!-- РУЧНОЙ ВВОД -->
-
-    <div class="card">
-
-        <label>
-            Или введите штрихкод вручную
-        </label>
-
-        <input
-            id="manualBarcode"
-            class="input"
-            type="text"
-            inputmode="numeric"
-            autocomplete="off"
-            placeholder="Например: 4601234567890"
-        >
-
-        <button
-            id="manualCheckButton"
-            class="btn btn-light">
-
-            🔎 Проверить цену
-
-        </button>
-
-    </div>
-
-
-    <div
-        id="openAdmin"
-        class="admin-link">
-
-        Вход для администратора
-
-    </div>
-
-</section>
-
-
-<!-- =====================================================
-     АДМИНКА
-===================================================== -->
-
-<section
-    id="adminPage"
-    class="admin-page">
-
-    <button
-        id="backButton"
-        class="btn btn-light"
-        style="margin-bottom:18px;">
-
-        ← Вернуться к проверке цены
-
-    </button>
-
-
-    <!-- LOGIN -->
-
-    <div
-        id="loginCard"
-        class="card">
-
-        <h2 class="admin-title">
-            Панель администратора
-        </h2>
-
-        <div class="admin-description">
-
-            Войдите используя пользователя,
-            созданного в Firebase Authentication.
-
-        </div>
-
-        <label>
-            Gmail
-        </label>
-
-        <input
-            id="email"
-            class="input"
-            type="email"
-            autocomplete="username"
-            placeholder="admin@gmail.com"
-        >
-
-        <label>
-            Пароль Firebase
-        </label>
-
-        <input
-            id="password"
-            class="input"
-            type="password"
-            autocomplete="current-password"
-            placeholder="Введите пароль"
-        >
-
-        <button
-            id="loginButton"
-            class="btn btn-orange">
-
-            Войти
-
-        </button>
-
-        <div
-            id="loginStatus"
-            class="status">
-        </div>
-
-    </div>
-
-
-    <!-- DASHBOARD -->
-
-    <div
-        id="dashboard"
-        class="hidden">
-
-        <!-- ADMIN USER -->
+    <section id="homePage">
 
         <div class="card">
 
-            <div class="admin-user">
+            <h2 class="card-title">
+                Проверка цены
+            </h2>
 
-                <div class="admin-user-info">
+            <p class="card-subtitle">
+                Отсканируйте штрихкод товара камерой
+                телефона или введите его вручную.
+            </p>
 
-                    <div class="admin-user-title">
-                        Администратор
-                    </div>
 
-                    <div
-                        id="adminEmail"
-                        class="admin-email">
-                    </div>
+            <div class="scan-box">
 
+                <div class="scan-icon">
+                    ▦
                 </div>
 
+                <h2>
+                    Сканировать товар
+                </h2>
+
+                <p>
+                    Наведите камеру на штрихкод.
+                    Цена товара появится автоматически.
+                </p>
+
                 <button
-                    id="logoutButton"
-                    class="btn btn-red logout">
-
-                    Выйти
-
+                    class="btn btn-primary"
+                    id="openMainScannerBtn"
+                >
+                    📷 Сканировать штрихкод
                 </button>
 
             </div>
@@ -1052,162 +924,420 @@ label {
         </div>
 
 
-        <!-- ADD PRODUCT -->
-
         <div class="card">
 
-            <h2>
-                Добавить товар
+            <h2 class="card-title">
+                Ввести штрихкод
             </h2>
 
-            <div class="description">
+            <p class="card-subtitle">
+                Можно ввести код вручную.
+            </p>
 
-                Отсканируйте штрихкод камерой
-                или введите его вручную.
+            <div class="field">
 
-            </div>
-
-            <label>
-                Штрихкод
-            </label>
-
-            <div class="barcode-row">
+                <label for="manualBarcode">
+                    Штрихкод
+                </label>
 
                 <input
-                    id="productBarcode"
                     class="input"
+                    id="manualBarcode"
                     type="text"
                     inputmode="numeric"
                     autocomplete="off"
-                    placeholder="Штрихкод"
+                    placeholder="Например: 4601234567890"
                 >
 
+            </div>
+
+            <button
+                class="btn btn-primary"
+                id="findManualBtn"
+            >
+                🔎 Найти цену
+            </button>
+
+
+            <div
+                id="priceResult"
+                class="result hidden"
+            ></div>
+
+        </div>
+
+
+        <div class="card">
+
+            <button
+                class="btn btn-secondary"
+                style="width:100%;"
+                id="adminPageBtn"
+            >
+                🔐 Панель администратора
+            </button>
+
+        </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         LOGIN
+         ===================================================== -->
+
+    <section
+        id="loginPage"
+        class="hidden"
+    >
+
+        <div class="card login-card">
+
+            <div class="login-icon">
+                🔐
+            </div>
+
+            <h2 class="card-title">
+                Панель администратора
+            </h2>
+
+            <p class="card-subtitle">
+                Войдите используя пользователя,
+                созданного в Firebase Authentication.
+            </p>
+
+
+            <div class="field">
+
+                <label for="loginEmail">
+                    Gmail
+                </label>
+
+                <input
+                    class="input"
+                    id="loginEmail"
+                    type="email"
+                    autocomplete="username"
+                    placeholder="admin@gmail.com"
+                >
+
+            </div>
+
+
+            <div class="field">
+
+                <label for="loginPassword">
+                    Пароль Firebase
+                </label>
+
+                <input
+                    class="input"
+                    id="loginPassword"
+                    type="password"
+                    autocomplete="current-password"
+                    placeholder="Введите пароль"
+                >
+
+            </div>
+
+
+            <button
+                class="btn btn-primary"
+                id="loginBtn"
+            >
+                Войти
+            </button>
+
+
+            <div
+                id="loginError"
+                class="result error hidden"
+                style="margin-top:18px;text-align:left;"
+            ></div>
+
+
+            <button
+                class="btn btn-secondary"
+                id="backFromLoginBtn"
+                style="width:100%;margin-top:12px;"
+            >
+                ← Вернуться к проверке цен
+            </button>
+
+        </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         ADMIN PANEL
+         ===================================================== -->
+
+    <section
+        id="adminPage"
+        class="hidden"
+    >
+
+        <div class="card">
+
+            <div class="admin-top">
+
+                <div>
+
+                    <h2 class="card-title">
+                        Администратор
+                    </h2>
+
+                    <div
+                        id="adminEmail"
+                        class="admin-email"
+                    >
+                        —
+                    </div>
+
+                </div>
+
                 <button
-                    id="scanAdminButton"
-                    class="btn btn-light camera-button">
-
-                    📷 Камера
-
+                    class="btn btn-danger btn-small"
+                    id="logoutBtn"
+                >
+                    Выйти
                 </button>
 
             </div>
 
-            <label>
-                Название товара
-            </label>
 
-            <input
-                id="productName"
-                class="input"
-                type="text"
-                placeholder="Например: Молоко 2,5%"
-            >
+            <div class="admin-actions">
 
-            <label>
-                Цена, ₸
-            </label>
+                <button
+                    class="btn btn-primary"
+                    id="showAddProductBtn"
+                >
+                    ➕ Добавить товар
+                </button>
 
-            <input
-                id="productPrice"
-                class="input"
-                type="number"
-                min="0"
-                step="0.01"
-                inputmode="decimal"
-                placeholder="Например: 650"
-            >
+                <button
+                    class="btn btn-secondary"
+                    id="refreshProductsBtn"
+                >
+                    🔄 Обновить товары
+                </button>
 
-            <button
-                id="saveProductButton"
-                class="btn btn-orange">
-
-                ➕ Сохранить товар
-
-            </button>
-
-            <div
-                id="saveStatus"
-                class="status">
             </div>
 
         </div>
 
 
-        <!-- PRODUCTS -->
+        <!-- =================================================
+             ADD / EDIT PRODUCT
+             ================================================= -->
 
-        <div class="card">
+        <div
+            id="productFormCard"
+            class="card hidden"
+        >
 
-            <h2>
-                Товары
+            <h2
+                id="productFormTitle"
+                class="card-title"
+            >
+                Добавить товар
             </h2>
 
-            <div class="description">
+            <p class="card-subtitle">
+                Заполните данные товара.
+            </p>
 
-                Все товары загружаются
-                непосредственно из Firebase
-                Realtime Database.
 
-            </div>
+            <div class="field">
 
-            <div
-                id="productList"
-                class="product-list">
+                <label>
+                    Штрихкод
+                </label>
 
-                <div class="description">
-                    Загрузка товаров...
+                <div class="button-row">
+
+                    <input
+                        class="input"
+                        id="productBarcode"
+                        type="text"
+                        inputmode="numeric"
+                        placeholder="Штрихкод"
+                    >
+
+                    <button
+                        class="btn btn-secondary"
+                        id="scanProductBarcodeBtn"
+                    >
+                        📷 Камера
+                    </button>
+
                 </div>
 
             </div>
 
+
+            <div class="field">
+
+                <label for="productName">
+                    Название товара
+                </label>
+
+                <input
+                    class="input"
+                    id="productName"
+                    type="text"
+                    placeholder="Например: Coca-Cola 0.5 л"
+                >
+
+            </div>
+
+
+            <div class="field">
+
+                <label for="productPrice">
+                    Цена
+                </label>
+
+                <input
+                    class="input"
+                    id="productPrice"
+                    type="number"
+                    inputmode="decimal"
+                    min="0"
+                    step="0.01"
+                    placeholder="Например: 450"
+                >
+
+            </div>
+
+
+            <div class="button-row">
+
+                <button
+                    class="btn btn-primary"
+                    id="saveProductBtn"
+                >
+                    💾 Сохранить
+                </button>
+
+                <button
+                    class="btn btn-secondary"
+                    id="cancelProductBtn"
+                >
+                    Отмена
+                </button>
+
+            </div>
+
         </div>
 
-    </div>
 
-</section>
+        <!-- =================================================
+             SEARCH ADMIN
+             ================================================= -->
+
+        <div class="card">
+
+            <h2 class="card-title">
+                Товары
+            </h2>
+
+            <p class="card-subtitle">
+                Все товары, сохранённые в Firebase.
+            </p>
+
+
+            <div class="field">
+
+                <input
+                    class="input"
+                    id="adminSearch"
+                    type="search"
+                    placeholder="Поиск по названию или штрихкоду..."
+                >
+
+            </div>
+
+
+            <div
+                id="productsLoading"
+                class="result loading"
+            >
+                Загрузка товаров...
+            </div>
+
+
+            <div
+                id="productList"
+                class="product-list"
+            ></div>
+
+        </div>
+
+    </section>
+
 
 </main>
 
 
-<div class="footer">
+<!-- =========================================================
+     FOOTER
+     ========================================================= -->
+
+<footer class="footer">
     Firkaan • Система проверки цен
-</div>
-
-</div>
+</footer>
 
 
-<!-- =====================================================
-     CAMERA SCANNER
-===================================================== -->
+<!-- =========================================================
+     SCANNER
+     ========================================================= -->
 
 <div
-    id="scanner"
-    class="scanner">
+    id="scannerOverlay"
+    class="scanner-overlay hidden"
+>
 
-    <video
-        id="scannerVideo"
-        playsinline
-        muted>
-    </video>
+    <div class="scanner-header">
 
-    <div class="scanner-overlay">
+        <div class="scanner-title">
+            Сканирование штрихкода
+        </div>
 
-        <div class="scanner-top">
+        <button
+            class="scanner-close"
+            id="closeScannerBtn"
+        >
+            ×
+        </button>
 
-            <div class="scanner-title">
-                Сканирование штрихкода
-            </div>
+    </div>
 
-            <button
-                id="closeScanner"
-                class="close-scanner">
 
-                ×
+    <div class="scanner-content">
 
-            </button>
+        <div class="video-wrap">
+
+            <video
+                id="scannerVideo"
+                autoplay
+                muted
+                playsinline
+            ></video>
+
+            <div class="scanner-line"></div>
 
         </div>
 
-        <div class="scan-frame"></div>
+
+        <div
+            id="scannerStatus"
+            class="scanner-status"
+        >
+            Запуск камеры...
+        </div>
+
 
         <div class="scanner-hint">
 
@@ -1218,801 +1348,296 @@ label {
 
     </div>
 
+
+    <div class="scanner-bottom">
+
+        <label class="camera-file">
+
+            📷 Выбрать фото штрихкода
+
+            <input
+                id="barcodeImageInput"
+                type="file"
+                accept="image/*"
+                capture="environment"
+            >
+
+        </label>
+
+    </div>
+
 </div>
 
 
-<!-- =====================================================
+<!-- =========================================================
+     TOAST
+     ========================================================= -->
+
+<div
+    id="toast"
+    class="toast hidden"
+></div>
+
+
+<!-- =========================================================
      FIREBASE
-===================================================== -->
+     ========================================================= -->
 
 <script type="module">
 
-/* =========================================================
-   FIREBASE SDK
-========================================================= */
-
-import {
-    initializeApp
-}
-from
-"https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
-
-
-import {
-    getAuth,
-    signInWithEmailAndPassword,
-    onAuthStateChanged,
-    signOut
-}
-from
-"https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js";
-
-
-import {
-    getDatabase,
-    ref,
-    get,
-    set,
-    push,
-    update,
-    remove,
-    onValue
-}
-from
-"https://www.gstatic.com/firebasejs/12.1.0/firebase-database.js";
-
-
-/* =========================================================
-   ТВОЙ FIREBASE CONFIG
-========================================================= */
-
-const firebaseConfig = {
-
-    apiKey:
-        "AIzaSyBb2gLGBAPtWIxF-Qv2em7S2EwdTLQ0w2A",
-
-    authDomain:
-        "firkaan.firebaseapp.com",
-
-    databaseURL:
-        "https://firkaan-default-rtdb.asia-southeast1.firebasedatabase.app",
-
-    projectId:
-        "firkaan",
-
-    storageBucket:
-        "firkaan.firebasestorage.app",
-
-    messagingSenderId:
-        "369015493396",
-
-    appId:
-        "1:369015493396:web:da9201c4ca1de513c7e801",
-
-    measurementId:
-        "G-8NH2JHKEJD"
-};
-
-
-/* =========================================================
-   FIREBASE INITIALIZATION
-========================================================= */
-
-const app =
-    initializeApp(
-        firebaseConfig
-    );
-
-
-const auth =
-    getAuth(app);
-
-
-const db =
-    getDatabase(app);
-
-
-const productsRef =
-    ref(
-        db,
-        "products"
-    );
-
-
-/* =========================================================
-   HELPER
-========================================================= */
-
-function $(id) {
-    return document.getElementById(id);
-}
-
-
-/* =========================================================
-   VARIABLES
-========================================================= */
-
-let scannerReader = null;
-let scannerControls = null;
-let scannerMode = null;
-let productsListener = null;
-let scannerBusy = false;
-
-
-/* =========================================================
-   STATUS
-========================================================= */
-
-function showStatus(
-    element,
-    message,
-    type = "error"
-) {
-
-    element.textContent =
-        message;
-
-    element.className =
-        "status show " + type;
-}
-
-
-function clearStatus(element) {
-
-    element.textContent = "";
-
-    element.className = "status";
-}
-
-
-/* =========================================================
-   FIREBASE ERROR
-========================================================= */
-
-function firebaseErrorMessage(error) {
-
-    console.error(
-        "Firebase error:",
-        error
-    );
-
-    const code =
-        error?.code || "";
-
-
-    switch (code) {
-
-        case "auth/api-key-not-valid":
-
-            return (
-                "Неверный Firebase API Key."
-            );
-
-
-        case "auth/invalid-credential":
-
-            return (
-                "Неверный Gmail или пароль."
-            );
-
-
-        case "auth/user-not-found":
-
-            return (
-                "Пользователь не найден в Firebase Authentication."
-            );
-
-
-        case "auth/wrong-password":
-
-            return (
-                "Неверный пароль."
-            );
-
-
-        case "auth/invalid-email":
-
-            return (
-                "Неверный Gmail."
-            );
-
-
-        case "auth/operation-not-allowed":
-
-            return (
-                "Email/Password не включён в Firebase Authentication."
-            );
-
-
-        case "auth/network-request-failed":
-
-            return (
-                "Ошибка сети. Проверьте интернет."
-            );
-
-
-        case "auth/too-many-requests":
-
-            return (
-                "Слишком много попыток. Попробуйте позже."
-            );
-
-
-        case "PERMISSION_DENIED":
-
-        case "permission-denied":
-
-            return (
-                "Firebase запретил операцию.\n" +
-                "Проверьте Rules Realtime Database."
-            );
-
-
-        default:
-
-            return (
-                "Ошибка Firebase:\n" +
-                (
-                    error?.message ||
-                    code ||
-                    "Неизвестная ошибка"
-                )
-            );
-    }
-}
-
-
-/* =========================================================
-   NORMALIZE BARCODE
-========================================================= */
-
-function normalizeBarcode(value) {
-
-    return String(value || "")
-        .trim()
-        .replace(/\s+/g, "");
-
-}
-
-
-/* =========================================================
-   GET ALL PRODUCTS
-========================================================= */
-
-async function getProductsObject() {
-
-    const snapshot =
-        await get(
-            productsRef
-        );
-
-    if (!snapshot.exists()) {
-        return {};
-    }
-
-    return snapshot.val() || {};
-}
-
-
-/* =========================================================
-   FIND PRODUCT BY BARCODE
-========================================================= */
-
-async function findProduct(
-    barcode
-) {
-
-    const cleanBarcode =
-        normalizeBarcode(
-            barcode
-        );
-
-
-    if (!cleanBarcode) {
-        return null;
-    }
-
-
-    const products =
-        await getProductsObject();
-
-
-    for (
-        const id in products
-    ) {
-
-        const product =
-            products[id];
-
-
-        if (
-            normalizeBarcode(
-                product?.barcode
-            ) === cleanBarcode
-        ) {
-
-            return {
-                id: id,
-                ...product
-            };
-
-        }
-
-    }
-
-
-    return null;
-}
-
-
-/* =========================================================
-   CHECK PRICE
-========================================================= */
-
-async function checkPrice(
-    barcode
-) {
-
-    const cleanBarcode =
-        normalizeBarcode(
-            barcode
-        );
-
-
-    if (!cleanBarcode) {
-
-        showStatus(
-            $("customerStatus"),
-            "Введите или отсканируйте штрихкод.",
-            "error"
-        );
-
-        return;
-    }
-
-
-    try {
-
-        showStatus(
-            $("customerStatus"),
-            "Ищем товар...",
-            "info"
-        );
-
-
-        const product =
-            await findProduct(
-                cleanBarcode
-            );
-
-
-        if (!product) {
-
-            $("resultCard")
-                .classList
-                .remove("active");
-
-
-            showStatus(
-                $("customerStatus"),
-                "Товар с таким штрихкодом не найден.",
-                "error"
-            );
-
-            return;
-        }
-
-
-        $("resultName")
-            .textContent =
-            product.name ||
-            "Без названия";
-
-
-        $("resultPrice")
-            .textContent =
-            Number(
-                product.price || 0
-            ).toLocaleString(
-                "ru-RU"
-            ) + " ₸";
-
-
-        $("resultBarcode")
-            .textContent =
-            "Штрихкод: " +
-            product.barcode;
-
-
-        $("resultCard")
-            .classList
-            .add("active");
-
-
-        showStatus(
-            $("customerStatus"),
-            "Товар найден.",
-            "success"
-        );
-
-    }
-    catch (error) {
-
-        showStatus(
-            $("customerStatus"),
-            firebaseErrorMessage(error),
-            "error"
-        );
-
-    }
-}
-
-
-/* =========================================================
-   CAMERA PERMISSION
-========================================================= */
-
-async function requestCamera() {
-
-    if (
-        !navigator.mediaDevices ||
-        !navigator.mediaDevices.getUserMedia
-    ) {
-
-        throw new Error(
-            "Этот браузер не поддерживает доступ к камере."
-        );
-    }
-
-
-    const stream =
-        await navigator.mediaDevices.getUserMedia({
-
-            video: {
-                facingMode: {
-                    ideal: "environment"
-                }
-            },
-
-            audio: false
-
-        });
+    /*
+     * =========================================================
+     * FIREBASE
+     * =========================================================
+     */
+
+    import {
+        initializeApp
+    } from
+    "https://www.gstatic.com/firebasejs/12.16.0/firebase-app.js";
+
+
+    import {
+        getAuth,
+        signInWithEmailAndPassword,
+        onAuthStateChanged,
+        signOut
+    } from
+    "https://www.gstatic.com/firebasejs/12.16.0/firebase-auth.js";
+
+
+    import {
+        getDatabase,
+        ref,
+        push,
+        set,
+        get,
+        update,
+        remove
+    } from
+    "https://www.gstatic.com/firebasejs/12.16.0/firebase-database.js";
 
 
     /*
-       Сразу останавливаем этот поток.
-       ZXing потом откроет камеру самостоятельно.
-    */
+     * =========================================================
+     * ТВОЙ FIREBASE CONFIG
+     * =========================================================
+     */
 
-    stream
-        .getTracks()
-        .forEach(
-            track => track.stop()
+    const firebaseConfig = {
+
+        apiKey:
+            "AIzaSyBb2gLGBAPtWIxF-Qv2em7S2EwdTLQ0w2A",
+
+        authDomain:
+            "firkaan.firebaseapp.com",
+
+        databaseURL:
+            "https://firkaan-default-rtdb.asia-southeast1.firebasedatabase.app",
+
+        projectId:
+            "firkaan",
+
+        storageBucket:
+            "firkaan.firebasestorage.app",
+
+        messagingSenderId:
+            "369015493396",
+
+        appId:
+            "1:369015493396:web:da9201c4ca1de513c7e801",
+
+        measurementId:
+            "G-8NH2JHKEJD"
+    };
+
+
+    /*
+     * =========================================================
+     * ИНИЦИАЛИЗАЦИЯ
+     * =========================================================
+     */
+
+    const app = initializeApp(firebaseConfig);
+
+    const auth = getAuth(app);
+
+    const db = getDatabase(app);
+
+
+    /*
+     * =========================================================
+     * DOM
+     * =========================================================
+     */
+
+    const homePage =
+        document.getElementById("homePage");
+
+    const loginPage =
+        document.getElementById("loginPage");
+
+    const adminPage =
+        document.getElementById("adminPage");
+
+
+    const loginEmail =
+        document.getElementById("loginEmail");
+
+    const loginPassword =
+        document.getElementById("loginPassword");
+
+    const loginBtn =
+        document.getElementById("loginBtn");
+
+    const loginError =
+        document.getElementById("loginError");
+
+
+    const adminEmail =
+        document.getElementById("adminEmail");
+
+
+    const productFormCard =
+        document.getElementById("productFormCard");
+
+    const productFormTitle =
+        document.getElementById("productFormTitle");
+
+    const productBarcode =
+        document.getElementById("productBarcode");
+
+    const productName =
+        document.getElementById("productName");
+
+    const productPrice =
+        document.getElementById("productPrice");
+
+
+    const productList =
+        document.getElementById("productList");
+
+    const productsLoading =
+        document.getElementById("productsLoading");
+
+    const adminSearch =
+        document.getElementById("adminSearch");
+
+
+    const priceResult =
+        document.getElementById("priceResult");
+
+
+    const scannerOverlay =
+        document.getElementById("scannerOverlay");
+
+    const scannerVideo =
+        document.getElementById("scannerVideo");
+
+    const scannerStatus =
+        document.getElementById("scannerStatus");
+
+
+    /*
+     * =========================================================
+     * ПЕРЕМЕННЫЕ
+     * =========================================================
+     */
+
+    let products = {};
+
+    let editingProductId = null;
+
+    let scannerControls = null;
+
+    let scannerMode = "main";
+
+    let scannerOpen = false;
+
+
+    /*
+     * =========================================================
+     * TOAST
+     * =========================================================
+     */
+
+    function showToast(message) {
+
+        const toast =
+            document.getElementById("toast");
+
+        toast.textContent = message;
+
+        toast.classList.remove("hidden");
+
+        clearTimeout(
+            window.__toastTimer
         );
 
-}
+        window.__toastTimer =
+            setTimeout(() => {
 
+                toast.classList.add("hidden");
 
-/* =========================================================
-   START SCANNER
-========================================================= */
-
-async function startScanner(
-    mode
-) {
-
-    if (scannerBusy) {
-        return;
+            }, 3500);
     }
 
 
-    scannerBusy = true;
+    /*
+     * =========================================================
+     * ПОКАЗ СТРАНИЦ
+     * =========================================================
+     */
 
-    scannerMode = mode;
+    function showPage(page) {
 
+        homePage.classList.add("hidden");
 
-    $("scanner")
-        .classList
-        .add("show");
+        loginPage.classList.add("hidden");
 
+        adminPage.classList.add("hidden");
 
-    try {
 
-        /*
-           Сначала получаем разрешение
-           iPhone на камеру.
-        */
+        page.classList.remove("hidden");
 
-        await requestCamera();
-
-
-        if (
-            typeof ZXingBrowser ===
-            "undefined"
-        ) {
-
-            throw new Error(
-                "Сканер штрихкодов не загрузился. Проверьте интернет."
-            );
-
-        }
-
-
-        scannerReader =
-            new ZXingBrowser.BrowserMultiFormatReader();
-
-
-        scannerControls =
-            await scannerReader.decodeFromConstraints(
-
-                {
-                    video: {
-                        facingMode: {
-                            ideal: "environment"
-                        }
-                    }
-                },
-
-                $("scannerVideo"),
-
-                async (
-                    result,
-                    error
-                ) => {
-
-                    if (!result) {
-                        return;
-                    }
-
-
-                    if (scannerBusy !== true) {
-                        return;
-                    }
-
-
-                    scannerBusy = false;
-
-
-                    const barcode =
-                        normalizeBarcode(
-                            result.getText()
-                        );
-
-
-                    closeScanner();
-
-
-                    if (!barcode) {
-                        return;
-                    }
-
-
-                    if (
-                        scannerMode ===
-                        "customer"
-                    ) {
-
-                        $("manualBarcode")
-                            .value =
-                            barcode;
-
-
-                        await checkPrice(
-                            barcode
-                        );
-
-                    }
-
-
-                    if (
-                        scannerMode ===
-                        "admin"
-                    ) {
-
-                        $("productBarcode")
-                            .value =
-                            barcode;
-
-
-                        showStatus(
-                            $("saveStatus"),
-                            "Штрихкод получен: " +
-                            barcode,
-                            "success"
-                        );
-
-                    }
-
-                }
-            );
-
-    }
-    catch (error) {
-
-        console.error(
-            "Camera error:",
-            error
-        );
-
-
-        closeScanner();
-
-
-        let message =
-            "Не удалось открыть камеру.";
-
-
-        if (
-            error?.name ===
-            "NotAllowedError"
-        ) {
-
-            message =
-                "Доступ к камере запрещён.\n\n" +
-                "На iPhone откройте Настройки → Safari → Камера → Разрешить.";
-
-        }
-        else if (
-            error?.name ===
-            "NotFoundError"
-        ) {
-
-            message =
-                "Камера на устройстве не найдена.";
-
-        }
-        else if (
-            location.protocol !==
-            "https:"
-        ) {
-
-            message =
-                "Камера требует HTTPS.\n\n" +
-                "Открывайте сайт через GitHub Pages: https://rafet08.github.io";
-
-        }
-        else if (
-            error?.message
-        ) {
-
-            message =
-                "Ошибка камеры:\n" +
-                error.message;
-
-        }
-
-
-        alert(message);
-
-    }
-    finally {
-
-        scannerBusy = false;
-
-    }
-}
-
-
-/* =========================================================
-   CLOSE SCANNER
-========================================================= */
-
-function closeScanner() {
-
-    scannerBusy = false;
-
-
-    if (scannerControls) {
-
-        try {
-            scannerControls.stop();
-        }
-        catch (e) {}
-
-        scannerControls = null;
+        window.scrollTo({
+            top: 0,
+            behavior: "smooth"
+        });
     }
 
 
-    if (scannerReader) {
+    /*
+     * =========================================================
+     * FIREBASE AUTH
+     * =========================================================
+     */
 
-        try {
-            scannerReader.reset();
-        }
-        catch (e) {}
+    onAuthStateChanged(
+        auth,
+        async (user) => {
 
-        scannerReader = null;
-    }
+            if (user) {
 
-
-    const video =
-        $("scannerVideo");
-
-
-    if (video.srcObject) {
-
-        video.srcObject
-            .getTracks()
-            .forEach(
-                track => track.stop()
-            );
-
-        video.srcObject = null;
-    }
-
-
-    $("scanner")
-        .classList
-        .remove("show");
-}
-
-
-/* =========================================================
-   CUSTOMER SCANNER
-========================================================= */
-
-$("scanCustomerButton")
-    .addEventListener(
-        "click",
-        () => {
-            startScanner("customer");
-        }
-    );
-
-
-/* =========================================================
-   ADMIN SCANNER
-========================================================= */
-
-$("scanAdminButton")
-    .addEventListener(
-        "click",
-        () => {
-            startScanner("admin");
-        }
-    );
-
-
-/* =========================================================
-   CLOSE CAMERA
-========================================================= */
-
-$("closeScanner")
-    .addEventListener(
-        "click",
-        closeScanner
-    );
-
-
-/* =========================================================
-   MANUAL SEARCH
-========================================================= */
-
-$("manualCheckButton")
-    .addEventListener(
-        "click",
-        () => {
-
-            checkPrice(
-                $("manualBarcode").value
-            );
-
-        }
-    );
-
-
-$("manualBarcode")
-    .addEventListener(
-        "keydown",
-        event => {
-
-            if (
-                event.key ===
-                "Enter"
-            ) {
-
-                checkPrice(
-                    $("manualBarcode").value
+                console.log(
+                    "Авторизован:",
+                    user.email
                 );
+
+                adminEmail.textContent =
+                    user.email || "";
+
+                showPage(adminPage);
+
+                await loadProducts();
+
+            } else {
+
+                console.log(
+                    "Пользователь не авторизован"
+                );
+
+                adminEmail.textContent = "";
 
             }
 
@@ -2020,74 +1645,30 @@ $("manualBarcode")
     );
 
 
-/* =========================================================
-   OPEN ADMIN
-========================================================= */
+    /*
+     * =========================================================
+     * ВХОД
+     * =========================================================
+     */
 
-$("openAdmin")
-    .addEventListener(
-        "click",
-        () => {
-
-            $("customerPage")
-                .classList
-                .add("hidden");
-
-            $("adminPage")
-                .classList
-                .add("show");
-
-        }
-    );
-
-
-/* =========================================================
-   BACK
-========================================================= */
-
-$("backButton")
-    .addEventListener(
-        "click",
-        () => {
-
-            $("adminPage")
-                .classList
-                .remove("show");
-
-            $("customerPage")
-                .classList
-                .remove("hidden");
-
-        }
-    );
-
-
-/* =========================================================
-   LOGIN
-========================================================= */
-
-$("loginButton")
-    .addEventListener(
+    loginBtn.addEventListener(
         "click",
         async () => {
 
             const email =
-                $("email")
-                    .value
-                    .trim();
-
+                loginEmail.value.trim();
 
             const password =
-                $("password")
-                    .value;
+                loginPassword.value;
+
+
+            loginError.classList.add("hidden");
 
 
             if (!email) {
 
-                showStatus(
-                    $("loginStatus"),
-                    "Введите Gmail.",
-                    "error"
+                showLoginError(
+                    "Введите Gmail."
                 );
 
                 return;
@@ -2096,818 +1677,1819 @@ $("loginButton")
 
             if (!password) {
 
-                showStatus(
-                    $("loginStatus"),
-                    "Введите пароль.",
-                    "error"
+                showLoginError(
+                    "Введите пароль."
                 );
 
                 return;
             }
+
+
+            loginBtn.disabled = true;
+
+            loginBtn.innerHTML =
+                '<span class="spinner"></span>Вход...';
 
 
             try {
 
-                $("loginButton")
-                    .disabled = true;
-
-
-                $("loginButton")
-                    .innerHTML =
-                    '<span class="spinner"></span> Вход...';
-
-
-                await signInWithEmailAndPassword(
-                    auth,
-                    email,
-                    password
-                );
-
-
-                showStatus(
-                    $("loginStatus"),
-                    "Вход выполнен.",
-                    "success"
-                );
-
-            }
-            catch (error) {
-
-                showStatus(
-                    $("loginStatus"),
-                    firebaseErrorMessage(error),
-                    "error"
-                );
-
-            }
-            finally {
-
-                $("loginButton")
-                    .disabled = false;
-
-                $("loginButton")
-                    .textContent = "Войти";
-
-            }
-
-        }
-    );
-
-
-/* =========================================================
-   LOGOUT
-========================================================= */
-
-$("logoutButton")
-    .addEventListener(
-        "click",
-        async () => {
-
-            try {
-
-                await signOut(auth);
-
-            }
-            catch (error) {
-
-                alert(
-                    firebaseErrorMessage(error)
-                );
-
-            }
-
-        }
-    );
-
-
-/* =========================================================
-   AUTH STATE
-========================================================= */
-
-onAuthStateChanged(
-    auth,
-    user => {
-
-        if (user) {
-
-            $("loginCard")
-                .classList
-                .add("hidden");
-
-
-            $("dashboard")
-                .classList
-                .remove("hidden");
-
-
-            $("adminEmail")
-                .textContent =
-                user.email ||
-                "";
-
-
-            startProductsListener();
-
-        }
-        else {
-
-            $("loginCard")
-                .classList
-                .remove("hidden");
-
-
-            $("dashboard")
-                .classList
-                .add("hidden");
-
-
-            if (productsListener) {
-
-                productsListener();
-
-                productsListener = null;
-
-            }
-
-        }
-
-    }
-);
-
-
-/* =========================================================
-   SAVE PRODUCT
-========================================================= */
-
-$("saveProductButton")
-    .addEventListener(
-        "click",
-        async () => {
-
-            const barcode =
-                normalizeBarcode(
-                    $("productBarcode").value
-                );
-
-
-            const name =
-                $("productName")
-                    .value
-                    .trim();
-
-
-            const priceText =
-                $("productPrice")
-                    .value
-                    .trim();
-
-
-            const price =
-                Number(priceText);
-
-
-            if (!barcode) {
-
-                showStatus(
-                    $("saveStatus"),
-                    "Введите или отсканируйте штрихкод.",
-                    "error"
-                );
-
-                return;
-            }
-
-
-            if (!name) {
-
-                showStatus(
-                    $("saveStatus"),
-                    "Введите название товара.",
-                    "error"
-                );
-
-                return;
-            }
-
-
-            if (
-                priceText === "" ||
-                !Number.isFinite(price) ||
-                price < 0
-            ) {
-
-                showStatus(
-                    $("saveStatus"),
-                    "Введите правильную цену.",
-                    "error"
-                );
-
-                return;
-            }
-
-
-            try {
-
-                $("saveProductButton")
-                    .disabled = true;
-
-
-                $("saveProductButton")
-                    .innerHTML =
-                    '<span class="spinner"></span> Сохранение...';
-
-
-                /*
-                   Проверяем существует ли
-                   такой штрихкод.
-                */
-
-                const existing =
-                    await findProduct(
-                        barcode
+                const result =
+                    await signInWithEmailAndPassword(
+                        auth,
+                        email,
+                        password
                     );
 
 
-                if (existing) {
-
-                    /*
-                       Товар уже есть.
-                       Обновляем.
-                    */
-
-                    await update(
-
-                        ref(
-                            db,
-                            "products/" +
-                            existing.id
-                        ),
-
-                        {
-                            barcode:
-                                barcode,
-
-                            name:
-                                name,
-
-                            price:
-                                price,
-
-                            updatedAt:
-                                Date.now()
-                        }
-
-                    );
-
-
-                    showStatus(
-                        $("saveStatus"),
-                        "Товар уже был в базе. Цена и название обновлены.",
-                        "success"
-                    );
-
-                }
-                else {
-
-                    /*
-                       Создаём новый ID.
-                    */
-
-                    const newProductRef =
-                        push(productsRef);
-
-
-                    await set(
-                        newProductRef,
-                        {
-                            barcode:
-                                barcode,
-
-                            name:
-                                name,
-
-                            price:
-                                price,
-
-                            createdAt:
-                                Date.now(),
-
-                            updatedAt:
-                                Date.now()
-                        }
-                    );
-
-
-                    showStatus(
-                        $("saveStatus"),
-                        "Товар успешно сохранён в Firebase.",
-                        "success"
-                    );
-
-                }
-
-
-                /*
-                   Очищаем форму.
-                */
-
-                $("productBarcode")
-                    .value = "";
-
-                $("productName")
-                    .value = "";
-
-                $("productPrice")
-                    .value = "";
-
-            }
-            catch (error) {
-
-                showStatus(
-                    $("saveStatus"),
-                    firebaseErrorMessage(error),
-                    "error"
-                );
-
-            }
-            finally {
-
-                $("saveProductButton")
-                    .disabled = false;
-
-                $("saveProductButton")
-                    .textContent =
-                    "➕ Сохранить товар";
-
-            }
-
-        }
-    );
-
-
-/* =========================================================
-   LOAD PRODUCTS REALTIME
-========================================================= */
-
-function startProductsListener() {
-
-    if (productsListener) {
-
-        productsListener();
-
-        productsListener = null;
-
-    }
-
-
-    productsListener =
-        onValue(
-
-            productsRef,
-
-            snapshot => {
-
-                const list =
-                    $("productList");
-
-
-                list.innerHTML = "";
-
-
-                if (!snapshot.exists()) {
-
-                    list.innerHTML =
-                        `
-                        <div class="description">
-                            В базе пока нет товаров.
-                        </div>
-                        `;
-
-                    return;
-                }
-
-
-                const data =
-                    snapshot.val() || {};
-
-
-                const products = [];
-
-
-                Object.keys(data)
-                    .forEach(
-                        id => {
-
-                            products.push({
-
-                                id: id,
-
-                                ...data[id]
-
-                            });
-
-                        }
-                    );
-
-
-                products.sort(
-                    (a,b) =>
-                        String(
-                            a.name || ""
-                        ).localeCompare(
-                            String(
-                                b.name || ""
-                            ),
-                            "ru"
-                        )
+                console.log(
+                    "Вход выполнен:",
+                    result.user.email
                 );
 
 
-                products.forEach(
-                    product => {
-
-                        const item =
-                            document.createElement(
-                                "div"
-                            );
-
-
-                        item.className =
-                            "product-item";
-
-
-                        const top =
-                            document.createElement(
-                                "div"
-                            );
-
-
-                        top.className =
-                            "product-top";
-
-
-                        const info =
-                            document.createElement(
-                                "div"
-                            );
-
-
-                        const name =
-                            document.createElement(
-                                "div"
-                            );
-
-
-                        name.className =
-                            "product-item-name";
-
-
-                        name.textContent =
-                            product.name ||
-                            "Без названия";
-
-
-                        const barcode =
-                            document.createElement(
-                                "div"
-                            );
-
-
-                        barcode.className =
-                            "product-item-barcode";
-
-
-                        barcode.textContent =
-                            "Штрихкод: " +
-                            (
-                                product.barcode ||
-                                ""
-                            );
-
-
-                        info.appendChild(
-                            name
-                        );
-
-
-                        info.appendChild(
-                            barcode
-                        );
-
-
-                        const price =
-                            document.createElement(
-                                "div"
-                            );
-
-
-                        price.className =
-                            "product-item-price";
-
-
-                        price.textContent =
-                            Number(
-                                product.price || 0
-                            ).toLocaleString(
-                                "ru-RU"
-                            ) +
-                            " ₸";
-
-
-                        top.appendChild(
-                            info
-                        );
-
-
-                        top.appendChild(
-                            price
-                        );
-
-
-                        const actions =
-                            document.createElement(
-                                "div"
-                            );
-
-
-                        actions.className =
-                            "product-actions";
-
-
-                        const edit =
-                            document.createElement(
-                                "button"
-                            );
-
-
-                        edit.className =
-                            "btn btn-light";
-
-
-                        edit.textContent =
-                            "✏️ Изменить";
-
-
-                        const remove =
-                            document.createElement(
-                                "button"
-                            );
-
-
-                        remove.className =
-                            "btn btn-red";
-
-
-                        remove.textContent =
-                            "🗑️ Удалить";
-
-
-                        actions.appendChild(
-                            edit
-                        );
-
-
-                        actions.appendChild(
-                            remove
-                        );
-
-
-                        item.appendChild(
-                            top
-                        );
-
-
-                        item.appendChild(
-                            actions
-                        );
-
-
-                        /* ==================================
-                           EDIT
-                        ================================== */
-
-                        edit.addEventListener(
-                            "click",
-                            async () => {
-
-                                const newName =
-                                    prompt(
-                                        "Название товара:",
-                                        product.name || ""
-                                    );
-
-
-                                if (
-                                    newName ===
-                                    null
-                                ) {
-                                    return;
-                                }
-
-
-                                const newPrice =
-                                    prompt(
-                                        "Цена в тенге:",
-                                        product.price || 0
-                                    );
-
-
-                                if (
-                                    newPrice ===
-                                    null
-                                ) {
-                                    return;
-                                }
-
-
-                                const cleanName =
-                                    newName.trim();
-
-
-                                const numericPrice =
-                                    Number(
-                                        newPrice
-                                    );
-
-
-                                if (
-                                    !cleanName ||
-                                    !Number.isFinite(
-                                        numericPrice
-                                    ) ||
-                                    numericPrice < 0
-                                ) {
-
-                                    alert(
-                                        "Неверное название или цена."
-                                    );
-
-                                    return;
-                                }
-
-
-                                try {
-
-                                    await update(
-
-                                        ref(
-                                            db,
-                                            "products/" +
-                                            product.id
-                                        ),
-
-                                        {
-                                            name:
-                                                cleanName,
-
-                                            price:
-                                                numericPrice,
-
-                                            updatedAt:
-                                                Date.now()
-                                        }
-
-                                    );
-
-                                }
-                                catch (error) {
-
-                                    alert(
-                                        firebaseErrorMessage(
-                                            error
-                                        )
-                                    );
-
-                                }
-
-                            }
-                        );
-
-
-                        /* ==================================
-                           DELETE
-                        ================================== */
-
-                        remove.addEventListener(
-                            "click",
-                            async () => {
-
-                                const confirmed =
-                                    confirm(
-                                        "Удалить товар «" +
-                                        (
-                                            product.name ||
-                                            ""
-                                        ) +
-                                        "»?"
-                                    );
-
-
-                                if (!confirmed) {
-                                    return;
-                                }
-
-
-                                try {
-
-                                    await removeProduct(
-                                        product.id
-                                    );
-
-                                }
-                                catch (error) {
-
-                                    alert(
-                                        firebaseErrorMessage(
-                                            error
-                                        )
-                                    );
-
-                                }
-
-                            }
-                        );
-
-
-                        list.appendChild(
-                            item
-                        );
-
-                    }
+                showToast(
+                    "Вход выполнен успешно."
                 );
 
-            },
 
-            error => {
+            } catch (error) {
 
                 console.error(
-                    "Realtime Database error:",
+                    "Firebase Login Error:",
                     error
                 );
 
 
-                $("productList")
-                    .innerHTML =
-                    `
-                    <div class="status show error">
-                        ${escapeHtml(
-                            firebaseErrorMessage(error)
-                        )}
-                    </div>
-                    `;
+                showLoginError(
+                    getFirebaseAuthError(
+                        error
+                    )
+                );
+
+
+            } finally {
+
+                loginBtn.disabled = false;
+
+                loginBtn.textContent =
+                    "Войти";
 
             }
 
-        );
-
-}
-
-
-/* =========================================================
-   REMOVE PRODUCT
-========================================================= */
-
-async function removeProduct(id) {
-
-    await remove(
-        ref(
-            db,
-            "products/" + id
-        )
+        }
     );
 
-}
+
+    /*
+     * =========================================================
+     * ОШИБКА ВХОДА
+     * =========================================================
+     */
+
+    function showLoginError(message) {
+
+        loginError.textContent =
+            message;
+
+        loginError.classList.remove(
+            "hidden"
+        );
+    }
 
 
-/* =========================================================
-   ESCAPE HTML
-========================================================= */
+    /*
+     * =========================================================
+     * FIREBASE AUTH ERRORS
+     * =========================================================
+     */
 
-function escapeHtml(value) {
+    function getFirebaseAuthError(error) {
 
-    return String(value || "")
-        .replace(
-            /&/g,
-            "&amp;"
-        )
-        .replace(
-            /</g,
-            "&lt;"
-        )
-        .replace(
-            />/g,
-            "&gt;"
-        )
-        .replace(
-            /"/g,
-            "&quot;"
-        )
-        .replace(
-            /'/g,
-            "&#039;"
+        const code =
+            error?.code || "";
+
+
+        if (
+            code.includes(
+                "invalid-credential"
+            )
+        ) {
+
+            return (
+                "Неверный Gmail или пароль."
+            );
+        }
+
+
+        if (
+            code.includes(
+                "invalid-login-credentials"
+            )
+        ) {
+
+            return (
+                "Неверный Gmail или пароль."
+            );
+        }
+
+
+        if (
+            code.includes(
+                "user-not-found"
+            )
+        ) {
+
+            return (
+                "Такого пользователя нет в Firebase Authentication."
+            );
+        }
+
+
+        if (
+            code.includes(
+                "wrong-password"
+            )
+        ) {
+
+            return (
+                "Неверный пароль."
+            );
+        }
+
+
+        if (
+            code.includes(
+                "invalid-api-key"
+            )
+        ) {
+
+            return (
+                "Firebase сообщает invalid-api-key. Проверьте Firebase Config."
+            );
+        }
+
+
+        if (
+            code.includes(
+                "network-request-failed"
+            )
+        ) {
+
+            return (
+                "Нет соединения с Firebase. Проверьте интернет."
+            );
+        }
+
+
+        return (
+            "Ошибка Firebase: " +
+            (error?.message || code)
+        );
+    }
+
+
+    /*
+     * =========================================================
+     * ВЫХОД
+     * =========================================================
+     */
+
+    document
+        .getElementById("logoutBtn")
+        .addEventListener(
+            "click",
+            async () => {
+
+                try {
+
+                    await signOut(auth);
+
+                    showPage(homePage);
+
+                    showToast(
+                        "Вы вышли из панели администратора."
+                    );
+
+                } catch (error) {
+
+                    console.error(error);
+
+                    showToast(
+                        "Не удалось выйти."
+                    );
+
+                }
+
+            }
         );
 
-}
+
+    /*
+     * =========================================================
+     * НАВИГАЦИЯ
+     * =========================================================
+     */
+
+    document
+        .getElementById("adminPageBtn")
+        .addEventListener(
+            "click",
+            () => {
+
+                if (auth.currentUser) {
+
+                    showPage(adminPage);
+
+                    loadProducts();
+
+                } else {
+
+                    showPage(loginPage);
+
+                }
+
+            }
+        );
+
+
+    document
+        .getElementById("backFromLoginBtn")
+        .addEventListener(
+            "click",
+            () => {
+
+                showPage(homePage);
+
+            }
+        );
+
+
+    /*
+     * =========================================================
+     * ЗАГРУЗКА ТОВАРОВ
+     * =========================================================
+     */
+
+    async function loadProducts() {
+
+        productsLoading.classList.remove(
+            "hidden"
+        );
+
+        productsLoading.textContent =
+            "Загрузка товаров...";
+
+
+        try {
+
+            const productsRef =
+                ref(
+                    db,
+                    "products"
+                );
+
+
+            const snapshot =
+                await get(productsRef);
+
+
+            if (snapshot.exists()) {
+
+                products =
+                    snapshot.val() || {};
+
+            } else {
+
+                products = {};
+
+            }
+
+
+            renderProducts();
+
+
+        } catch (error) {
+
+            console.error(
+                "Load products:",
+                error
+            );
+
+
+            productsLoading.classList.remove(
+                "hidden"
+            );
+
+            productsLoading.textContent =
+                "Ошибка загрузки: " +
+                getDatabaseError(error);
+
+        }
+
+    }
+
+
+    /*
+     * =========================================================
+     * DATABASE ERROR
+     * =========================================================
+     */
+
+    function getDatabaseError(error) {
+
+        if (
+            error?.code ===
+            "PERMISSION_DENIED"
+        ) {
+
+            return (
+                "Нет доступа. Проверьте правила Realtime Database и вход администратора."
+            );
+        }
+
+
+        return (
+            error?.message ||
+            "Неизвестная ошибка Firebase."
+        );
+    }
+
+
+    /*
+     * =========================================================
+     * СОХРАНЕНИЕ ТОВАРА
+     * =========================================================
+     */
+
+    async function saveProduct() {
+
+        if (!auth.currentUser) {
+
+            showToast(
+                "Сначала войдите как администратор."
+            );
+
+            return;
+        }
+
+
+        const barcode =
+            productBarcode.value
+                .trim()
+                .replace(/\s+/g, "");
+
+
+        const name =
+            productName.value.trim();
+
+
+        const price =
+            Number(
+                productPrice.value
+            );
+
+
+        if (!barcode) {
+
+            showToast(
+                "Введите штрихкод."
+            );
+
+            return;
+        }
+
+
+        if (!name) {
+
+            showToast(
+                "Введите название товара."
+            );
+
+            return;
+        }
+
+
+        if (
+            !Number.isFinite(price) ||
+            price < 0
+        ) {
+
+            showToast(
+                "Введите правильную цену."
+            );
+
+            return;
+        }
+
+
+        const saveButton =
+            document.getElementById(
+                "saveProductBtn"
+            );
+
+
+        saveButton.disabled = true;
+
+        saveButton.innerHTML =
+            '<span class="spinner"></span>Сохранение...';
+
+
+        try {
+
+            /*
+             * ИЗМЕНЕНИЕ
+             */
+
+            if (editingProductId) {
+
+                const productRef =
+                    ref(
+                        db,
+                        "products/" +
+                        editingProductId
+                    );
+
+
+                await update(
+                    productRef,
+                    {
+                        barcode: barcode,
+                        name: name,
+                        price: price,
+                        updatedAt:
+                            Date.now()
+                    }
+                );
+
+
+                showToast(
+                    "Товар изменён."
+                );
+
+
+            } else {
+
+                /*
+                 * НОВЫЙ ТОВАР
+                 */
+
+                const productsRef =
+                    ref(
+                        db,
+                        "products"
+                    );
+
+
+                const newProductRef =
+                    push(productsRef);
+
+
+                await set(
+                    newProductRef,
+                    {
+                        barcode: barcode,
+                        name: name,
+                        price: price,
+                        createdAt:
+                            Date.now(),
+                        updatedAt:
+                            Date.now()
+                    }
+                );
+
+
+                showToast(
+                    "Товар сохранён в Firebase."
+                );
+
+            }
+
+
+            resetProductForm();
+
+            await loadProducts();
+
+
+        } catch (error) {
+
+            console.error(
+                "SAVE ERROR:",
+                error
+            );
+
+
+            showToast(
+                "Ошибка сохранения: " +
+                getDatabaseError(error)
+            );
+
+
+        } finally {
+
+            saveButton.disabled = false;
+
+            saveButton.textContent =
+                "💾 Сохранить";
+
+        }
+
+    }
+
+
+    /*
+     * =========================================================
+     * РЕНДЕР ТОВАРОВ
+     * =========================================================
+     */
+
+    function renderProducts() {
+
+        const search =
+            adminSearch.value
+                .trim()
+                .toLowerCase();
+
+
+        productList.innerHTML = "";
+
+
+        const entries =
+            Object.entries(products)
+                .filter(
+                    ([id, product]) => {
+
+                        const barcode =
+                            String(
+                                product?.barcode ||
+                                ""
+                            ).toLowerCase();
+
+                        const name =
+                            String(
+                                product?.name ||
+                                ""
+                            ).toLowerCase();
+
+                        return (
+                            !search ||
+                            barcode.includes(search) ||
+                            name.includes(search)
+                        );
+
+                    }
+                )
+                .sort(
+                    (a, b) =>
+                        Number(
+                            b[1]?.updatedAt || 0
+                        ) -
+                        Number(
+                            a[1]?.updatedAt || 0
+                        )
+                );
+
+
+        productsLoading.classList.add(
+            "hidden"
+        );
+
+
+        if (!entries.length) {
+
+            productList.innerHTML = `
+                <div class="result loading">
+                    Товары не найдены.
+                </div>
+            `;
+
+            return;
+        }
+
+
+        for (
+            const [id, product]
+            of entries
+        ) {
+
+            const item =
+                document.createElement(
+                    "div"
+                );
+
+
+            item.className =
+                "product-item";
+
+
+            const price =
+                Number(
+                    product.price || 0
+                );
+
+
+            item.innerHTML = `
+
+                <div class="product-info">
+
+                    <div class="product-name">
+                        ${escapeHtml(
+                            product.name ||
+                            "Без названия"
+                        )}
+                    </div>
+
+                    <div class="product-barcode">
+                        ${escapeHtml(
+                            product.barcode ||
+                            ""
+                        )}
+                    </div>
+
+                    <div class="product-price">
+                        ${formatPrice(price)} ₸
+                    </div>
+
+                </div>
+
+                <div class="product-buttons">
+
+                    <button
+                        class="btn btn-secondary btn-small"
+                        data-edit="${id}"
+                    >
+                        ✏️
+                    </button>
+
+                    <button
+                        class="btn btn-danger btn-small"
+                        data-delete="${id}"
+                    >
+                        🗑️
+                    </button>
+
+                </div>
+            `;
+
+
+            productList.appendChild(item);
+
+        }
+
+
+        /*
+         * EDIT
+         */
+
+        productList
+            .querySelectorAll(
+                "[data-edit]"
+            )
+            .forEach(
+                button => {
+
+                    button.addEventListener(
+                        "click",
+                        () => {
+
+                            editProduct(
+                                button.dataset.edit
+                            );
+
+                        }
+                    );
+
+                }
+            );
+
+
+        /*
+         * DELETE
+         */
+
+        productList
+            .querySelectorAll(
+                "[data-delete]"
+            )
+            .forEach(
+                button => {
+
+                    button.addEventListener(
+                        "click",
+                        () => {
+
+                            deleteProduct(
+                                button.dataset.delete
+                            );
+
+                        }
+                    );
+
+                }
+            );
+
+    }
+
+
+    /*
+     * =========================================================
+     * ЭКРАНИРОВАНИЕ HTML
+     * =========================================================
+     */
+
+    function escapeHtml(value) {
+
+        return String(value)
+            .replaceAll("&", "&amp;")
+            .replaceAll("<", "&lt;")
+            .replaceAll(">", "&gt;")
+            .replaceAll('"', "&quot;")
+            .replaceAll("'", "&#039;");
+    }
+
+
+    /*
+     * =========================================================
+     * ЦЕНА
+     * =========================================================
+     */
+
+    function formatPrice(price) {
+
+        return Number(price || 0)
+            .toLocaleString(
+                "ru-RU",
+                {
+                    maximumFractionDigits: 2
+                }
+            );
+
+    }
+
+
+    /*
+     * =========================================================
+     * EDIT PRODUCT
+     * =========================================================
+     */
+
+    function editProduct(id) {
+
+        const product =
+            products[id];
+
+
+        if (!product) {
+
+            return;
+
+        }
+
+
+        editingProductId = id;
+
+
+        productFormTitle.textContent =
+            "Изменить товар";
+
+
+        productBarcode.value =
+            product.barcode || "";
+
+
+        productName.value =
+            product.name || "";
+
+
+        productPrice.value =
+            product.price ?? "";
+
+
+        productFormCard.classList.remove(
+            "hidden"
+        );
+
+
+        productFormCard.scrollIntoView({
+            behavior: "smooth",
+            block: "start"
+        });
+
+    }
+
+
+    /*
+     * =========================================================
+     * DELETE PRODUCT
+     * =========================================================
+     */
+
+    async function deleteProduct(id) {
+
+        if (!auth.currentUser) {
+
+            showToast(
+                "Вы не авторизованы."
+            );
+
+            return;
+        }
+
+
+        const product =
+            products[id];
+
+
+        if (!product) {
+
+            return;
+
+        }
+
+
+        const confirmed =
+            confirm(
+                "Удалить товар:\n\n" +
+                product.name +
+                "\n" +
+                product.barcode +
+                "?"
+            );
+
+
+        if (!confirmed) {
+
+            return;
+
+        }
+
+
+        try {
+
+            const productRef =
+                ref(
+                    db,
+                    "products/" + id
+                );
+
+
+            await remove(
+                productRef
+            );
+
+
+            showToast(
+                "Товар удалён."
+            );
+
+
+            await loadProducts();
+
+
+        } catch (error) {
+
+            console.error(
+                error
+            );
+
+
+            showToast(
+                "Ошибка удаления: " +
+                getDatabaseError(error)
+            );
+
+        }
+
+    }
+
+
+    /*
+     * =========================================================
+     * RESET FORM
+     * =========================================================
+     */
+
+    function resetProductForm() {
+
+        editingProductId = null;
+
+
+        productFormTitle.textContent =
+            "Добавить товар";
+
+
+        productBarcode.value =
+            "";
+
+        productName.value =
+            "";
+
+        productPrice.value =
+            "";
+
+
+        productFormCard.classList.add(
+            "hidden"
+        );
+
+    }
+
+
+    /*
+     * =========================================================
+     * ADD PRODUCT BUTTON
+     * =========================================================
+     */
+
+    document
+        .getElementById(
+            "showAddProductBtn"
+        )
+        .addEventListener(
+            "click",
+            () => {
+
+                resetProductForm();
+
+                productFormCard.classList.remove(
+                    "hidden"
+                );
+
+                productFormCard.scrollIntoView({
+                    behavior: "smooth",
+                    block: "start"
+                });
+
+            }
+        );
+
+
+    /*
+     * =========================================================
+     * CANCEL PRODUCT
+     * =========================================================
+     */
+
+    document
+        .getElementById(
+            "cancelProductBtn"
+        )
+        .addEventListener(
+            "click",
+            () => {
+
+                resetProductForm();
+
+            }
+        );
+
+
+    /*
+     * =========================================================
+     * SAVE PRODUCT BUTTON
+     * =========================================================
+     */
+
+    document
+        .getElementById(
+            "saveProductBtn"
+        )
+        .addEventListener(
+            "click",
+            saveProduct
+        );
+
+
+    /*
+     * =========================================================
+     * SEARCH ADMIN
+     * =========================================================
+     */
+
+    adminSearch.addEventListener(
+        "input",
+        renderProducts
+    );
+
+
+    /*
+     * =========================================================
+     * REFRESH
+     * =========================================================
+     */
+
+    document
+        .getElementById(
+            "refreshProductsBtn"
+        )
+        .addEventListener(
+            "click",
+            loadProducts
+        );
+
+
+    /*
+     * =========================================================
+     * FIND PRICE
+     * =========================================================
+     */
+
+    document
+        .getElementById(
+            "findManualBtn"
+        )
+        .addEventListener(
+            "click",
+            () => {
+
+                findProductByBarcode(
+                    document
+                        .getElementById(
+                            "manualBarcode"
+                        )
+                        .value
+                );
+
+            }
+        );
+
+
+    /*
+     * ENTER В ШТРИХКОДЕ
+     */
+
+    document
+        .getElementById(
+            "manualBarcode"
+        )
+        .addEventListener(
+            "keydown",
+            event => {
+
+                if (
+                    event.key ===
+                    "Enter"
+                ) {
+
+                    findProductByBarcode(
+                        event.target.value
+                    );
+
+                }
+
+            }
+        );
+
+
+    /*
+     * =========================================================
+     * FIND PRODUCT
+     * =========================================================
+     */
+
+    async function findProductByBarcode(
+        barcode
+    ) {
+
+        barcode =
+            String(barcode || "")
+                .trim()
+                .replace(/\s+/g, "");
+
+
+        if (!barcode) {
+
+            showPriceError(
+                "Введите штрихкод."
+            );
+
+            return;
+        }
+
+
+        showPriceLoading();
+
+
+        try {
+
+            /*
+             * Берём актуальные данные
+             * напрямую из Firebase.
+             */
+
+            const productsRef =
+                ref(
+                    db,
+                    "products"
+                );
+
+
+            const snapshot =
+                await get(productsRef);
+
+
+            if (!snapshot.exists()) {
+
+                showPriceError(
+                    "В базе пока нет товаров."
+                );
+
+                return;
+            }
+
+
+            const data =
+                snapshot.val() || {};
+
+
+            let found = null;
+
+
+            for (
+                const [id, product]
+                of Object.entries(data)
+            ) {
+
+                const productBarcode =
+                    String(
+                        product?.barcode ||
+                        ""
+                    )
+                    .trim()
+                    .replace(/\s+/g, "");
+
+
+                if (
+                    productBarcode ===
+                    barcode
+                ) {
+
+                    found = {
+                        id,
+                        ...product
+                    };
+
+                    break;
+                }
+
+            }
+
+
+            if (!found) {
+
+                showPriceError(
+                    "Товар с таким штрихкодом не найден."
+                );
+
+                return;
+            }
+
+
+            showPriceSuccess(
+                found
+            );
+
+
+        } catch (error) {
+
+            console.error(
+                "FIND ERROR:",
+                error
+            );
+
+
+            showPriceError(
+                "Ошибка Firebase: " +
+                getDatabaseError(error)
+            );
+
+        }
+
+    }
+
+
+    /*
+     * =========================================================
+     * PRICE UI
+     * =========================================================
+     */
+
+    function showPriceLoading() {
+
+        priceResult.className =
+            "result loading";
+
+
+        priceResult.classList.remove(
+            "hidden"
+        );
+
+
+        priceResult.innerHTML = `
+            <span class="spinner"
+                  style="border-color:#ffd9ad;
+                         border-top-color:#ed8120;">
+            </span>
+            Поиск товара...
+        `;
+
+    }
+
+
+    function showPriceError(message) {
+
+        priceResult.className =
+            "result error";
+
+
+        priceResult.classList.remove(
+            "hidden"
+        );
+
+
+        priceResult.innerHTML = `
+            <div class="result-name">
+                ⚠️ Товар не найден
+            </div>
+
+            <div>
+                ${escapeHtml(message)}
+            </div>
+        `;
+
+    }
+
+
+    function showPriceSuccess(product) {
+
+        priceResult.className =
+            "result success";
+
+
+        priceResult.classList.remove(
+            "hidden"
+        );
+
+
+        priceResult.innerHTML = `
+
+            <div class="result-name">
+                ${escapeHtml(
+                    product.name ||
+                    "Товар"
+                )}
+            </div>
+
+            <div class="result-price">
+                ${formatPrice(
+                    product.price
+                )} ₸
+            </div>
+
+            <div class="result-barcode">
+                Штрихкод:
+                ${escapeHtml(
+                    product.barcode ||
+                    ""
+                )}
+            </div>
+
+        `;
+
+    }
+
+
+    /*
+     * =========================================================
+     * MAIN SCANNER
+     * =========================================================
+     */
+
+    document
+        .getElementById(
+            "openMainScannerBtn"
+        )
+        .addEventListener(
+            "click",
+            () => {
+
+                scannerMode =
+                    "main";
+
+                openScanner();
+
+            }
+        );
+
+
+    /*
+     * =========================================================
+     * PRODUCT SCANNER
+     * =========================================================
+     */
+
+    document
+        .getElementById(
+            "scanProductBarcodeBtn"
+        )
+        .addEventListener(
+            "click",
+            () => {
+
+                scannerMode =
+                    "product";
+
+                openScanner();
+
+            }
+        );
+
+
+    /*
+     * =========================================================
+     * OPEN SCANNER
+     * =========================================================
+     */
+
+    async function openScanner() {
+
+        scannerOpen = true;
+
+        scannerOverlay.classList.remove(
+            "hidden"
+        );
+
+
+        scannerStatus.textContent =
+            "Запуск камеры...";
+
+
+        /*
+         * Чистим старое видео.
+         */
+
+        try {
+
+            scannerVideo.pause();
+
+        } catch (_) {}
+
+
+        scannerVideo.srcObject =
+            null;
+
+
+        /*
+         * Запускаем ZXing.
+         */
+
+        try {
+
+            await startZXingScanner();
+
+        } catch (error) {
+
+            console.error(
+                "SCANNER ERROR:",
+                error
+            );
+
+
+            scannerStatus.innerHTML =
+                "Не удалось запустить камеру.<br>" +
+                "Разрешите доступ к камере и попробуйте ещё раз.";
+
+        }
+
+    }
+
+
+    /*
+     * =========================================================
+     * START ZXING
+     * =========================================================
+     */
+
+    async function startZXingScanner() {
+
+        if (
+            typeof ZXingBrowser ===
+            "undefined"
+        ) {
+
+            throw new Error(
+                "ZXing не загрузился."
+            );
+
+        }
+
+
+        scannerStatus.textContent =
+            "Запрос доступа к камере...";
+
+
+        /*
+         * BrowserMultiFormatReader
+         * читает QR + 1D/2D штрихкоды.
+         */
+
+        const reader =
+            new ZXingBrowser.BrowserMultiFormatReader();
+
+
+        /*
+         * Используем заднюю камеру.
+         *
+         * Это особенно важно для iPhone.
+         */
+
+        scannerControls =
+            await reader.decodeFromConstraints(
+
+                {
+                    video: {
+                        facingMode: {
+                            ideal:
+                                "environment"
+                        },
+                        width: {
+                            ideal: 1280
+                        },
+                        height: {
+                            ideal: 720
+                        }
+                    }
+                },
+
+                scannerVideo,
+
+                (
+                    result,
+                    error
+                ) => {
+
+                    if (!scannerOpen) {
+
+                        return;
+
+                    }
+
+
+                    if (result) {
+
+                        const code =
+                            result
+                                .getText()
+                                .trim();
+
+
+                        if (code) {
+
+                            handleScannedBarcode(
+                                code
+                            );
+
+                        }
+
+                    }
+
+                }
+            );
+
+
+        scannerStatus.textContent =
+            "Камера работает. Наведите на штрихкод.";
+
+    }
+
+
+    /*
+     * =========================================================
+     * SCANNED BARCODE
+     * =========================================================
+     */
+
+    function handleScannedBarcode(
+        barcode
+    ) {
+
+        if (!scannerOpen) {
+
+            return;
+
+        }
+
+
+        /*
+         * Сначала закрываем сканер,
+         * чтобы результат не срабатывал много раз.
+         */
+
+        closeScanner();
+
+
+        /*
+         * РЕЖИМ ГЛАВНОЙ
+         */
+
+        if (
+            scannerMode ===
+            "main"
+        ) {
+
+            document
+                .getElementById(
+                    "manualBarcode"
+                )
+                .value =
+                    barcode;
+
+
+            findProductByBarcode(
+                barcode
+            );
+
+
+            return;
+        }
+
+
+        /*
+         * РЕЖИМ АДМИНИСТРАТОРА
+         */
+
+        if (
+            scannerMode ===
+            "product"
+        ) {
+
+            productBarcode.value =
+                barcode;
+
+
+            showToast(
+                "Штрихкод добавлен."
+            );
+
+
+            productBarcode.focus();
+
+        }
+
+    }
+
+
+    /*
+     * =========================================================
+     * CLOSE SCANNER
+     * =========================================================
+     */
+
+    function closeScanner() {
+
+        scannerOpen = false;
+
+
+        /*
+         * Остановить ZXing.
+         */
+
+        try {
+
+            if (
+                scannerControls &&
+                typeof scannerControls.stop ===
+                    "function"
+            ) {
+
+                scannerControls.stop();
+
+            }
+
+        } catch (error) {
+
+            console.warn(
+                "Scanner stop:",
+                error
+            );
+
+        }
+
+
+        scannerControls = null;
+
+
+        /*
+         * Остановить все tracks камеры.
+         */
+
+        try {
+
+            if (
+                scannerVideo.srcObject
+            ) {
+
+                const tracks =
+                    scannerVideo
+                        .srcObject
+                        .getTracks();
+
+
+                tracks.forEach(
+                    track =>
+                        track.stop()
+                );
+
+            }
+
+        } catch (_) {}
+
+
+        scannerVideo.srcObject =
+            null;
+
+
+        scannerOverlay.classList.add(
+            "hidden"
+        );
+
+    }
+
+
+    document
+        .getElementById(
+            "closeScannerBtn"
+        )
+        .addEventListener(
+            "click",
+            closeScanner
+        );
+
+
+    /*
+     * =========================================================
+     * ESC
+     * =========================================================
+     */
+
+    document.addEventListener(
+        "keydown",
+        event => {
+
+            if (
+                event.key === "Escape" &&
+                scannerOpen
+            ) {
+
+                closeScanner();
+
+            }
+
+        }
+    );
+
+
+    /*
+     * =========================================================
+     * IMAGE BARCODE SCANNER
+     *
+     * Если камера не работает,
+     * пользователь может сфотографировать
+     * штрихкод и выбрать фотографию.
+     * =========================================================
+     */
+
+    document
+        .getElementById(
+            "barcodeImageInput"
+        )
+        .addEventListener(
+            "change",
+            async event => {
+
+                const file =
+                    event.target.files?.[0];
+
+
+                if (!file) {
+
+                    return;
+
+                }
+
+
+                scannerStatus.textContent =
+                    "Распознавание фотографии...";
+
+
+                try {
+
+                    const reader =
+                        new ZXingBrowser
+                            .BrowserMultiFormatReader();
+
+
+                    const url =
+                        URL.createObjectURL(
+                            file
+                        );
+
+
+                    try {
+
+                        const result =
+                            await reader
+                                .decodeFromImageUrl(
+                                    url
+                                );
+
+
+                        const code =
+                            result
+                                .getText()
+                                .trim();
+
+
+                        if (code) {
+
+                            handleScannedBarcode(
+                                code
+                            );
+
+                        } else {
+
+                            scannerStatus.textContent =
+                                "Штрихкод не найден.";
+
+                        }
+
+                    } finally {
+
+                        URL.revokeObjectURL(
+                            url
+                        );
+
+                    }
+
+
+                } catch (error) {
+
+                    console.error(
+                        "IMAGE SCAN:",
+                        error
+                    );
+
+
+                    scannerStatus.textContent =
+                        "Не удалось распознать штрихкод на фото.";
+
+                }
+
+
+                event.target.value =
+                    "";
+
+            }
+        );
+
+
+    /*
+     * =========================================================
+     * ГЛОБАЛЬНЫЕ ОШИБКИ
+     * =========================================================
+     */
+
+    window.addEventListener(
+        "unhandledrejection",
+        event => {
+
+            console.error(
+                "Unhandled:",
+                event.reason
+            );
+
+        }
+    );
+
+
+    /*
+     * =========================================================
+     * START
+     * =========================================================
+     */
+
+    console.log(
+        "Firkaan loaded."
+    );
+
+    console.log(
+        "Firebase project:",
+        firebaseConfig.projectId
+    );
+
+    console.log(
+        "Database:",
+        firebaseConfig.databaseURL
+    );
 
 </script>
 
