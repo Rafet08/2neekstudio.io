@@ -4,42 +4,50 @@
 <meta charset="UTF-8">
 
 <meta
-  name="viewport"
-  content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    name="viewport"
+    content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
 >
 
-<meta name="theme-color" content="#f28a24">
+<meta name="theme-color" content="#ef8624">
+
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
 
 <title>Firkaan — Проверка цен</title>
 
-<!-- Библиотека сканирования штрихкодов -->
+<!-- ZXing для распознавания штрихкодов -->
 <script src="https://unpkg.com/@zxing/browser@0.1.5/umd/index.min.js"></script>
 
 <style>
 
+/* =========================================================
+   ОСНОВНЫЕ ЦВЕТА
+========================================================= */
+
 :root {
-    --orange: #f28a24;
-    --orange-dark: #df7410;
-    --orange-light: #fff2df;
+    --orange: #ef8624;
+    --orange2: #f5a13b;
+    --orange-dark: #d86f10;
+    --orange-light: #fff1df;
 
     --white: #ffffff;
-    --black: #111111;
+    --black: #151515;
 
     --gray: #777777;
-    --gray-light: #f5f5f5;
-    --border: #e1e1e1;
+    --gray2: #eeeeee;
 
     --green: #16803c;
-    --green-bg: #e9f7ed;
+    --green-bg: #eaf8ef;
 
     --red: #c62828;
     --red-bg: #ffebee;
 
-    --shadow:
-        0 10px 35px rgba(0,0,0,0.08);
-
-    --radius: 24px;
+    --shadow: 0 10px 35px rgba(0,0,0,.08);
 }
+
+/* =========================================================
+   RESET
+========================================================= */
 
 * {
     box-sizing: border-box;
@@ -53,20 +61,14 @@ html {
 body {
     margin: 0;
     padding: 0;
-
-    background:
-        linear-gradient(
-            180deg,
-            #f8f8f8,
-            #eeeeee
-        );
-
+    background: #f5f5f5;
     color: var(--black);
 
     font-family:
         -apple-system,
         BlinkMacSystemFont,
         "SF Pro Display",
+        "SF Pro Text",
         "Segoe UI",
         Arial,
         sans-serif;
@@ -81,294 +83,226 @@ button {
     cursor: pointer;
 }
 
+/* =========================================================
+   APP
+========================================================= */
+
 .app {
     width: 100%;
-    max-width: 600px;
+    max-width: 650px;
     min-height: 100vh;
-
     margin: 0 auto;
-
-    background: #f7f7f7;
+    background: #f6f6f6;
 }
 
-
-/* =========================
+/* =========================================================
    HEADER
-========================= */
+========================================================= */
 
 .header {
-
-    padding:
-        28px
-        24px
-        30px;
+    padding: 32px 24px 34px;
 
     color: white;
 
     background:
         linear-gradient(
             135deg,
-            #f7a43a,
-            #ef821c
+            #f6a13a,
+            #ed7d16
         );
 
     border-radius:
-        0 0
-        32px
-        32px;
+        0 0 35px 35px;
 
     box-shadow:
-        0 7px 25px
-        rgba(242,138,36,.25);
+        0 8px 25px rgba(239,134,36,.25);
 }
 
 .header-content {
-
     display: flex;
     align-items: center;
-
     gap: 18px;
 }
 
 .logo {
-
     width: 72px;
     height: 72px;
 
-    border-radius: 24px;
-
-    background: white;
+    flex-shrink: 0;
 
     display: flex;
     align-items: center;
     justify-content: center;
 
+    border-radius: 23px;
+
+    background: white;
     color: var(--orange);
 
-    font-size: 42px;
+    font-size: 43px;
     font-weight: 900;
 
     box-shadow:
-        0 5px 15px
-        rgba(0,0,0,.08);
+        0 6px 18px rgba(0,0,0,.1);
 }
 
 .header-title {
-
     margin: 0;
 
-    font-size: 36px;
-
-    font-weight: 800;
-
+    font-size: 35px;
     line-height: 1.05;
+    font-weight: 800;
 }
 
 .header-subtitle {
-
-    margin:
-        8px
-        0
-        0;
+    margin-top: 8px;
 
     font-size: 17px;
-
-    opacity: .95;
 }
 
-
-/* =========================
+/* =========================================================
    CONTENT
-========================= */
+========================================================= */
 
 .content {
-
-    padding:
-        22px
-        18px
-        40px;
+    padding: 22px 18px 40px;
 }
 
 .card {
-
-    background: white;
-
-    border-radius:
-        var(--radius);
+    margin-bottom: 18px;
 
     padding: 24px;
 
-    margin-bottom: 18px;
+    background: white;
 
-    box-shadow:
-        var(--shadow);
+    border-radius: 25px;
+
+    box-shadow: var(--shadow);
 }
 
-
-/* =========================
-   MAIN SCANNER
-========================= */
+/* =========================================================
+   HERO
+========================================================= */
 
 .hero {
+    padding: 34px 22px;
 
     text-align: center;
-
-    padding:
-        34px
-        22px;
 }
 
 .scan-icon {
-
     width: 88px;
     height: 88px;
 
-    margin:
-        0 auto
-        18px;
-
-    border-radius: 28px;
+    margin: 0 auto 18px;
 
     display: flex;
     align-items: center;
     justify-content: center;
 
-    background:
-        var(--orange-light);
+    border-radius: 28px;
 
-    color:
-        var(--orange);
+    background: var(--orange-light);
+    color: var(--orange);
 
     font-size: 48px;
 }
 
 .hero h2 {
+    margin: 0 0 10px;
 
-    margin:
-        0 0
-        10px;
-
-    font-size: 27px;
+    font-size: 28px;
+    font-weight: 800;
 }
 
 .description {
+    margin-bottom: 22px;
 
     color: var(--gray);
 
     font-size: 15px;
-
     line-height: 1.55;
-
-    margin-bottom: 22px;
 }
 
-
-/* =========================
+/* =========================================================
    BUTTONS
-========================= */
+========================================================= */
 
 .btn {
-
     width: 100%;
 
-    border: none;
+    padding: 16px 18px;
 
+    border: none;
     border-radius: 17px;
 
-    padding:
-        16px
-        18px;
-
     font-size: 17px;
-
     font-weight: 750;
 
     transition:
-        transform .12s,
-        opacity .12s;
+        transform .12s ease,
+        opacity .12s ease;
 }
 
 .btn:active {
-
-    transform:
-        scale(.97);
+    transform: scale(.97);
 }
 
 .btn:disabled {
-
     opacity: .6;
-
-    cursor: not-allowed;
 }
 
 .btn-orange {
-
     color: white;
 
     background:
         linear-gradient(
             135deg,
-            #f39a35,
-            #ed7d16
+            var(--orange2),
+            var(--orange)
         );
 }
 
 .btn-light {
-
-    color:
-        var(--orange-dark);
-
-    background:
-        var(--orange-light);
+    color: var(--orange-dark);
+    background: var(--orange-light);
 }
 
 .btn-red {
-
-    color:
-        var(--red);
-
-    background:
-        var(--red-bg);
+    color: var(--red);
+    background: var(--red-bg);
 }
 
 .btn-dark {
-
     color: white;
-
-    background: #202020;
+    background: #222;
 }
 
-
-/* =========================
-   INPUTS
-========================= */
+/* =========================================================
+   INPUT
+========================================================= */
 
 label {
-
     display: block;
 
-    margin-bottom: 6px;
+    margin-bottom: 7px;
 
     color: #555;
 
     font-size: 14px;
-
-    font-weight: 700;
+    font-weight: 750;
 }
 
 .input {
-
     width: 100%;
 
-    padding:
-        15px
-        16px;
+    margin-bottom: 16px;
 
-    margin-bottom: 15px;
+    padding: 15px 16px;
 
     border:
         1px solid
-        var(--border);
+        #dddddd;
 
     border-radius: 15px;
 
@@ -376,88 +310,26 @@ label {
 
     background: white;
 
+    color: #111;
+
     font-size: 16px;
 
-    transition:
-        border .15s,
-        box-shadow .15s;
+    appearance: none;
 }
 
 .input:focus {
-
-    border-color:
-        var(--orange);
+    border-color: var(--orange);
 
     box-shadow:
         0 0 0 4px
-        rgba(242,138,36,.12);
+        rgba(239,134,36,.12);
 }
 
-
-/* =========================
-   RESULT
-========================= */
-
-.result {
-
-    display: none;
-}
-
-.result.active {
-
-    display: block;
-}
-
-.result-label {
-
-    color: #888;
-
-    font-size: 12px;
-
-    font-weight: 700;
-
-    letter-spacing: .5px;
-}
-
-.product-name {
-
-    margin-top: 7px;
-
-    font-size: 22px;
-
-    font-weight: 800;
-}
-
-.product-price {
-
-    margin:
-        7px
-        0;
-
-    color:
-        var(--orange);
-
-    font-size: 44px;
-
-    font-weight: 900;
-}
-
-.product-barcode {
-
-    color: #777;
-
-    font-family: monospace;
-
-    font-size: 13px;
-}
-
-
-/* =========================
+/* =========================================================
    STATUS
-========================= */
+========================================================= */
 
 .status {
-
     display: none;
 
     margin-top: 15px;
@@ -468,110 +340,127 @@ label {
 
     font-size: 14px;
 
-    line-height: 1.45;
+    line-height: 1.5;
+
+    white-space: pre-line;
 }
 
 .status.show {
-
     display: block;
 }
 
 .status.success {
-
-    color:
-        var(--green);
-
-    background:
-        var(--green-bg);
+    color: var(--green);
+    background: var(--green-bg);
 }
 
 .status.error {
-
-    color:
-        var(--red);
-
-    background:
-        var(--red-bg);
+    color: var(--red);
+    background: var(--red-bg);
 }
 
 .status.info {
-
-    color:
-        #995b00;
-
-    background:
-        #fff5df;
+    color: #8a5a00;
+    background: #fff4dd;
 }
 
+/* =========================================================
+   RESULT
+========================================================= */
 
-/* =========================
+.result {
+    display: none;
+}
+
+.result.active {
+    display: block;
+}
+
+.result-label {
+    color: #888;
+
+    font-size: 12px;
+    font-weight: 750;
+
+    letter-spacing: .5px;
+}
+
+.product-name {
+    margin-top: 7px;
+
+    font-size: 24px;
+    font-weight: 800;
+}
+
+.product-price {
+    margin: 8px 0;
+
+    color: var(--orange);
+
+    font-size: 44px;
+    font-weight: 900;
+}
+
+.product-barcode {
+    color: #777;
+
+    font-family: monospace;
+
+    font-size: 13px;
+}
+
+/* =========================================================
    ADMIN
-========================= */
+========================================================= */
 
 .admin-page {
-
     display: none;
 }
 
 .admin-page.show {
-
     display: block;
 }
 
-.back-button {
-
-    margin-bottom: 18px;
-}
-
 .admin-title {
-
-    margin:
-        0 0
-        8px;
+    margin: 0 0 10px;
 
     font-size: 30px;
+    line-height: 1.15;
 }
 
 .admin-description {
-
     margin-bottom: 25px;
 
     color: var(--gray);
 
-    line-height: 1.5;
+    font-size: 15px;
+    line-height: 1.55;
 }
 
-
-/* =========================
+/* =========================================================
    ADMIN USER
-========================= */
+========================================================= */
 
 .admin-user {
-
     display: flex;
 
     align-items: center;
-
     justify-content: space-between;
 
     gap: 15px;
 }
 
 .admin-user-info {
-
     min-width: 0;
 }
 
 .admin-user-title {
-
-    font-weight: 800;
-
     font-size: 17px;
+    font-weight: 800;
 }
 
 .admin-email {
-
-    margin-top: 4px;
+    margin-top: 5px;
 
     color: #777;
 
@@ -581,25 +470,20 @@ label {
 }
 
 .logout {
-
     width: auto;
 
-    white-space: nowrap;
+    padding: 11px 15px;
 
-    padding:
-        11px
-        15px;
+    white-space: nowrap;
 
     font-size: 14px;
 }
 
-
-/* =========================
-   ADD PRODUCT
-========================= */
+/* =========================================================
+   BARCODE ROW
+========================================================= */
 
 .barcode-row {
-
     display: grid;
 
     grid-template-columns:
@@ -607,39 +491,24 @@ label {
         125px;
 
     gap: 10px;
-
-    align-items: start;
-}
-
-.barcode-row .input {
-
-    margin-bottom: 15px;
 }
 
 .camera-button {
-
-    padding:
-        15px
-        10px;
+    padding: 15px 8px;
 
     font-size: 14px;
 }
 
-
-/* =========================
-   PRODUCTS
-========================= */
+/* =========================================================
+   PRODUCT LIST
+========================================================= */
 
 .product-list {
-
     margin-top: 15px;
 }
 
 .product-item {
-
-    padding:
-        16px
-        0;
+    padding: 16px 0;
 
     border-bottom:
         1px solid
@@ -647,13 +516,10 @@ label {
 }
 
 .product-item:last-child {
-
-    border-bottom:
-        none;
+    border-bottom: none;
 }
 
 .product-top {
-
     display: flex;
 
     justify-content: space-between;
@@ -662,14 +528,11 @@ label {
 }
 
 .product-item-name {
-
     font-size: 16px;
-
     font-weight: 750;
 }
 
 .product-item-barcode {
-
     margin-top: 5px;
 
     color: #888;
@@ -680,19 +543,15 @@ label {
 }
 
 .product-item-price {
-
-    color:
-        var(--orange);
+    color: var(--orange);
 
     font-size: 17px;
-
     font-weight: 850;
 
     white-space: nowrap;
 }
 
 .product-actions {
-
     display: grid;
 
     grid-template-columns:
@@ -705,48 +564,39 @@ label {
 }
 
 .product-actions button {
-
     padding: 10px;
 
     font-size: 14px;
 }
 
-
-/* =========================
+/* =========================================================
    ADMIN LINK
-========================= */
+========================================================= */
 
 .admin-link {
+    margin: 26px 0 10px;
 
     text-align: center;
-
-    margin:
-        25px
-        0
-        10px;
 
     color: #777;
 
     font-size: 14px;
 
-    text-decoration:
-        underline;
+    text-decoration: underline;
 
     cursor: pointer;
 }
 
-
-/* =========================
+/* =========================================================
    SCANNER
-========================= */
+========================================================= */
 
 .scanner {
-
     position: fixed;
 
     inset: 0;
 
-    z-index: 9999;
+    z-index: 99999;
 
     display: none;
 
@@ -754,12 +604,10 @@ label {
 }
 
 .scanner.show {
-
     display: block;
 }
 
 .scanner video {
-
     position: absolute;
 
     inset: 0;
@@ -771,7 +619,6 @@ label {
 }
 
 .scanner-overlay {
-
     position: absolute;
 
     inset: 0;
@@ -780,8 +627,7 @@ label {
 
     flex-direction: column;
 
-    justify-content:
-        space-between;
+    justify-content: space-between;
 
     padding:
         25px
@@ -789,29 +635,32 @@ label {
         35px;
 
     color: white;
+
+    pointer-events: none;
 }
 
 .scanner-top {
-
     display: flex;
 
-    justify-content:
-        space-between;
-
     align-items: center;
+    justify-content: space-between;
 }
 
 .scanner-title {
+    padding: 10px 14px;
+
+    border-radius: 14px;
+
+    background:
+        rgba(0,0,0,.55);
 
     font-size: 18px;
-
     font-weight: 800;
 }
 
 .close-scanner {
-
-    width: 46px;
-    height: 46px;
+    width: 48px;
+    height: 48px;
 
     border: none;
 
@@ -820,16 +669,16 @@ label {
     color: white;
 
     background:
-        rgba(0,0,0,.55);
+        rgba(0,0,0,.65);
 
-    font-size: 28px;
+    font-size: 30px;
+
+    pointer-events: auto;
 }
 
 .scan-frame {
-
-    width: 82%;
-
-    height: 155px;
+    width: 84%;
+    height: 170px;
 
     margin: auto;
 
@@ -841,42 +690,41 @@ label {
 
     box-shadow:
         0 0 0 9999px
-        rgba(0,0,0,.45);
+        rgba(0,0,0,.42);
 }
 
 .scanner-hint {
-
-    padding:
-        14px;
+    padding: 14px;
 
     border-radius: 15px;
 
     text-align: center;
 
     background:
-        rgba(0,0,0,.6);
+        rgba(0,0,0,.7);
 
     font-size: 14px;
+
+    line-height: 1.4;
 }
 
-
-/* =========================
+/* =========================================================
    SPINNER
-========================= */
+========================================================= */
 
 .spinner {
-
     display: inline-block;
 
     width: 18px;
     height: 18px;
 
+    margin-right: 5px;
+
     border:
         2px solid
         rgba(255,255,255,.5);
 
-    border-top-color:
-        white;
+    border-top-color: white;
 
     border-radius: 50%;
 
@@ -884,67 +732,51 @@ label {
         spin .7s
         linear infinite;
 
-    vertical-align:
-        -4px;
+    vertical-align: -4px;
 }
 
 @keyframes spin {
-
     to {
-        transform:
-            rotate(360deg);
+        transform: rotate(360deg);
     }
 }
 
-
-/* =========================
+/* =========================================================
    FOOTER
-========================= */
+========================================================= */
 
 .footer {
+    padding: 5px 0 35px;
 
     text-align: center;
 
     color: #999;
 
-    padding:
-        5px
-        0
-        35px;
-
     font-size: 13px;
 }
 
-
-/* =========================
+/* =========================================================
    HIDDEN
-========================= */
+========================================================= */
 
 .hidden {
-
     display: none !important;
 }
 
-
-/* =========================
+/* =========================================================
    DESKTOP
-========================= */
+========================================================= */
 
 @media (min-width: 700px) {
 
     body {
-
-        padding:
-            25px
-            0;
+        padding: 25px 0;
     }
 
     .app {
-
-        border-radius:
-            30px;
-
         overflow: hidden;
+
+        border-radius: 30px;
 
         box-shadow:
             0 15px 50px
@@ -955,11 +787,9 @@ label {
 </style>
 </head>
 
-
 <body>
 
 <div class="app">
-
 
 <!-- =====================================================
      HEADER
@@ -992,13 +822,11 @@ label {
 
 <main class="content">
 
-
 <!-- =====================================================
-     CUSTOMER PAGE
+     СТРАНИЦА ПОКУПАТЕЛЯ
 ===================================================== -->
 
 <section id="customerPage">
-
 
     <div class="card hero">
 
@@ -1006,20 +834,18 @@ label {
             ▦
         </div>
 
-
         <h2>
             Узнать цену товара
         </h2>
 
-
         <div class="description">
 
-            Нажмите кнопку и наведите камеру
-            телефона на штрихкод товара.
-            Цена появится автоматически.
+            Наведите камеру телефона
+            на штрихкод товара.
+            Сайт автоматически найдёт
+            товар и покажет его цену.
 
         </div>
-
 
         <button
             id="scanCustomerButton"
@@ -1028,7 +854,6 @@ label {
             📷 Сканировать штрихкод
 
         </button>
-
 
         <div
             id="customerStatus"
@@ -1048,7 +873,6 @@ label {
             ТОВАР НАЙДЕН
         </div>
 
-
         <div
             id="resultName"
             class="product-name">
@@ -1057,7 +881,6 @@ label {
 
         </div>
 
-
         <div
             id="resultPrice"
             class="product-price">
@@ -1065,7 +888,6 @@ label {
             — ₸
 
         </div>
-
 
         <div
             id="resultBarcode"
@@ -1078,7 +900,7 @@ label {
     </div>
 
 
-    <!-- РУЧНОЙ ШТРИХКОД -->
+    <!-- РУЧНОЙ ВВОД -->
 
     <div class="card">
 
@@ -1086,15 +908,14 @@ label {
             Или введите штрихкод вручную
         </label>
 
-
         <input
             id="manualBarcode"
             class="input"
             type="text"
             inputmode="numeric"
+            autocomplete="off"
             placeholder="Например: 4601234567890"
         >
-
 
         <button
             id="manualCheckButton"
@@ -1106,8 +927,6 @@ label {
 
     </div>
 
-
-    <!-- АДМИН -->
 
     <div
         id="openAdmin"
@@ -1121,17 +940,17 @@ label {
 
 
 <!-- =====================================================
-     ADMIN PAGE
+     АДМИНКА
 ===================================================== -->
 
 <section
     id="adminPage"
     class="admin-page">
 
-
     <button
         id="backButton"
-        class="btn btn-light back-button">
+        class="btn btn-light"
+        style="margin-bottom:18px;">
 
         ← Вернуться к проверке цены
 
@@ -1144,11 +963,9 @@ label {
         id="loginCard"
         class="card">
 
-
         <h2 class="admin-title">
             Панель администратора
         </h2>
-
 
         <div class="admin-description">
 
@@ -1157,11 +974,9 @@ label {
 
         </div>
 
-
         <label>
             Gmail
         </label>
-
 
         <input
             id="email"
@@ -1171,20 +986,17 @@ label {
             placeholder="admin@gmail.com"
         >
 
-
         <label>
             Пароль Firebase
         </label>
-
 
         <input
             id="password"
             class="input"
             type="password"
             autocomplete="current-password"
-            placeholder="Пароль"
+            placeholder="Введите пароль"
         >
-
 
         <button
             id="loginButton"
@@ -1193,7 +1005,6 @@ label {
             Войти
 
         </button>
-
 
         <div
             id="loginStatus"
@@ -1208,7 +1019,6 @@ label {
     <div
         id="dashboard"
         class="hidden">
-
 
         <!-- ADMIN USER -->
 
@@ -1228,7 +1038,6 @@ label {
                     </div>
 
                 </div>
-
 
                 <button
                     id="logoutButton"
@@ -1251,11 +1060,16 @@ label {
                 Добавить товар
             </h2>
 
+            <div class="description">
+
+                Отсканируйте штрихкод камерой
+                или введите его вручную.
+
+            </div>
 
             <label>
                 Штрихкод
             </label>
-
 
             <div class="barcode-row">
 
@@ -1264,9 +1078,9 @@ label {
                     class="input"
                     type="text"
                     inputmode="numeric"
+                    autocomplete="off"
                     placeholder="Штрихкод"
                 >
-
 
                 <button
                     id="scanAdminButton"
@@ -1278,11 +1092,9 @@ label {
 
             </div>
 
-
             <label>
                 Название товара
             </label>
-
 
             <input
                 id="productName"
@@ -1291,11 +1103,9 @@ label {
                 placeholder="Например: Молоко 2,5%"
             >
 
-
             <label>
                 Цена, ₸
             </label>
-
 
             <input
                 id="productPrice"
@@ -1303,18 +1113,17 @@ label {
                 type="number"
                 min="0"
                 step="0.01"
+                inputmode="decimal"
                 placeholder="Например: 650"
             >
-
 
             <button
                 id="saveProductButton"
                 class="btn btn-orange">
 
-                ➕ Добавить товар
+                ➕ Сохранить товар
 
             </button>
-
 
             <div
                 id="saveStatus"
@@ -1332,18 +1141,21 @@ label {
                 Товары
             </h2>
 
-
             <div class="description">
 
-                Все товары хранятся в Firebase
-                Firestore.
+                Все товары загружаются
+                непосредственно из Firebase
+                Realtime Database.
 
             </div>
-
 
             <div
                 id="productList"
                 class="product-list">
+
+                <div class="description">
+                    Загрузка товаров...
+                </div>
 
             </div>
 
@@ -1353,16 +1165,12 @@ label {
 
 </section>
 
-
 </main>
 
 
 <div class="footer">
-
     Firkaan • Система проверки цен
-
 </div>
-
 
 </div>
 
@@ -1375,23 +1183,19 @@ label {
     id="scanner"
     class="scanner">
 
-
     <video
         id="scannerVideo"
         playsinline
         muted>
     </video>
 
-
     <div class="scanner-overlay">
-
 
         <div class="scanner-top">
 
             <div class="scanner-title">
                 Сканирование штрихкода
             </div>
-
 
             <button
                 id="closeScanner"
@@ -1403,10 +1207,7 @@ label {
 
         </div>
 
-
-        <div class="scan-frame">
-        </div>
-
+        <div class="scan-frame"></div>
 
         <div class="scanner-hint">
 
@@ -1426,15 +1227,15 @@ label {
 
 <script type="module">
 
-
-/* =====================================================
-   FIREBASE IMPORTS
-===================================================== */
+/* =========================================================
+   FIREBASE SDK
+========================================================= */
 
 import {
     initializeApp
 }
-from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
+from
+"https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
 
 
 import {
@@ -1443,28 +1244,27 @@ import {
     onAuthStateChanged,
     signOut
 }
-from "https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js";
+from
+"https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js";
 
 
 import {
-    getFirestore,
-    collection,
-    query,
-    where,
-    getDocs,
-    addDoc,
-    updateDoc,
-    deleteDoc,
-    doc,
-    orderBy,
-    onSnapshot
+    getDatabase,
+    ref,
+    get,
+    set,
+    push,
+    update,
+    remove,
+    onValue
 }
-from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
+from
+"https://www.gstatic.com/firebasejs/12.1.0/firebase-database.js";
 
 
-/* =====================================================
-   FIREBASE CONFIG
-===================================================== */
+/* =========================================================
+   ТВОЙ FIREBASE CONFIG
+========================================================= */
 
 const firebaseConfig = {
 
@@ -1473,6 +1273,9 @@ const firebaseConfig = {
 
     authDomain:
         "firkaan.firebaseapp.com",
+
+    databaseURL:
+        "https://firkaan-default-rtdb.asia-southeast1.firebasedatabase.app",
 
     projectId:
         "firkaan",
@@ -1488,13 +1291,12 @@ const firebaseConfig = {
 
     measurementId:
         "G-8NH2JHKEJD"
-
 };
 
 
-/* =====================================================
-   INITIALIZE FIREBASE
-===================================================== */
+/* =========================================================
+   FIREBASE INITIALIZATION
+========================================================= */
 
 const app =
     initializeApp(
@@ -1507,43 +1309,39 @@ const auth =
 
 
 const db =
-    getFirestore(app);
+    getDatabase(app);
 
 
 const productsRef =
-    collection(
+    ref(
         db,
         "products"
     );
 
 
-/* =====================================================
-   SHORT SELECTOR
-===================================================== */
+/* =========================================================
+   HELPER
+========================================================= */
 
 function $(id) {
-
     return document.getElementById(id);
-
 }
 
 
-/* =====================================================
+/* =========================================================
    VARIABLES
-===================================================== */
+========================================================= */
 
 let scannerReader = null;
-
 let scannerControls = null;
-
 let scannerMode = null;
+let productsListener = null;
+let scannerBusy = false;
 
-let productsListenerStarted = false;
 
-
-/* =====================================================
+/* =========================================================
    STATUS
-===================================================== */
+========================================================= */
 
 function showStatus(
     element,
@@ -1555,25 +1353,28 @@ function showStatus(
         message;
 
     element.className =
-        "status show " +
-        type;
-
+        "status show " + type;
 }
 
 
-/* =====================================================
-   FIREBASE ERROR
-===================================================== */
+function clearStatus(element) {
 
-function getFirebaseError(
-    error
-) {
+    element.textContent = "";
+
+    element.className = "status";
+}
+
+
+/* =========================================================
+   FIREBASE ERROR
+========================================================= */
+
+function firebaseErrorMessage(error) {
 
     console.error(
         "Firebase error:",
         error
     );
-
 
     const code =
         error?.code || "";
@@ -1581,163 +1382,202 @@ function getFirebaseError(
 
     switch (code) {
 
+        case "auth/api-key-not-valid":
+
+            return (
+                "Неверный Firebase API Key."
+            );
+
 
         case "auth/invalid-credential":
 
-            return "Неверный Gmail или пароль Firebase.";
+            return (
+                "Неверный Gmail или пароль."
+            );
 
 
         case "auth/user-not-found":
 
-            return "Такого пользователя нет в Firebase Authentication.";
+            return (
+                "Пользователь не найден в Firebase Authentication."
+            );
 
 
         case "auth/wrong-password":
 
-            return "Неверный пароль Firebase.";
+            return (
+                "Неверный пароль."
+            );
 
 
         case "auth/invalid-email":
 
-            return "Неверный формат Gmail.";
+            return (
+                "Неверный Gmail."
+            );
 
 
         case "auth/operation-not-allowed":
 
-            return "В Firebase Authentication не включён вход через Email/Password.";
+            return (
+                "Email/Password не включён в Firebase Authentication."
+            );
 
 
         case "auth/network-request-failed":
 
-            return "Ошибка сети. Проверьте интернет-соединение.";
+            return (
+                "Ошибка сети. Проверьте интернет."
+            );
 
 
         case "auth/too-many-requests":
 
-            return "Слишком много попыток входа. Попробуйте позже.";
+            return (
+                "Слишком много попыток. Попробуйте позже."
+            );
 
+
+        case "PERMISSION_DENIED":
 
         case "permission-denied":
 
-            return "Firebase Firestore запретил доступ. Проверьте Security Rules.";
+            return (
+                "Firebase запретил операцию.\n" +
+                "Проверьте Rules Realtime Database."
+            );
 
 
         default:
 
             return (
-                "Ошибка Firebase: " +
-                code +
+                "Ошибка Firebase:\n" +
                 (
-                    error?.message
-                        ? "\n" +
-                          error.message
-                        : ""
+                    error?.message ||
+                    code ||
+                    "Неизвестная ошибка"
                 )
             );
-
     }
+}
+
+
+/* =========================================================
+   NORMALIZE BARCODE
+========================================================= */
+
+function normalizeBarcode(value) {
+
+    return String(value || "")
+        .trim()
+        .replace(/\s+/g, "");
 
 }
 
 
-/* =====================================================
-   FIND PRODUCT
-===================================================== */
+/* =========================================================
+   GET ALL PRODUCTS
+========================================================= */
+
+async function getProductsObject() {
+
+    const snapshot =
+        await get(
+            productsRef
+        );
+
+    if (!snapshot.exists()) {
+        return {};
+    }
+
+    return snapshot.val() || {};
+}
+
+
+/* =========================================================
+   FIND PRODUCT BY BARCODE
+========================================================= */
 
 async function findProduct(
     barcode
 ) {
 
     const cleanBarcode =
-        String(barcode)
-            .trim();
-
-
-    if (!cleanBarcode) {
-
-        return null;
-
-    }
-
-
-    const q =
-        query(
-
-            productsRef,
-
-            where(
-                "barcode",
-                "==",
-                cleanBarcode
-            )
-
+        normalizeBarcode(
+            barcode
         );
 
 
-    const snapshot =
-        await getDocs(q);
+    if (!cleanBarcode) {
+        return null;
+    }
 
 
-    if (
-        snapshot.empty
+    const products =
+        await getProductsObject();
+
+
+    for (
+        const id in products
     ) {
 
-        return null;
+        const product =
+            products[id];
+
+
+        if (
+            normalizeBarcode(
+                product?.barcode
+            ) === cleanBarcode
+        ) {
+
+            return {
+                id: id,
+                ...product
+            };
+
+        }
 
     }
 
 
-    const document =
-        snapshot.docs[0];
-
-
-    return {
-
-        id:
-            document.id,
-
-        ...document.data()
-
-    };
-
+    return null;
 }
 
 
-/* =====================================================
+/* =========================================================
    CHECK PRICE
-===================================================== */
+========================================================= */
 
 async function checkPrice(
     barcode
 ) {
 
     const cleanBarcode =
-        String(barcode)
-            .trim();
+        normalizeBarcode(
+            barcode
+        );
 
 
     if (!cleanBarcode) {
 
         showStatus(
-
             $("customerStatus"),
-
             "Введите или отсканируйте штрихкод.",
-
             "error"
-
         );
 
         return;
-
     }
 
 
     try {
 
-        $("customerStatus")
-            .className =
-            "status";
+        showStatus(
+            $("customerStatus"),
+            "Ищем товар...",
+            "info"
+        );
 
 
         const product =
@@ -1754,17 +1594,12 @@ async function checkPrice(
 
 
             showStatus(
-
                 $("customerStatus"),
-
-                "Товар с таким штрихкодом не найден в базе Firkaan.",
-
+                "Товар с таким штрихкодом не найден.",
                 "error"
-
             );
 
             return;
-
         }
 
 
@@ -1776,18 +1611,15 @@ async function checkPrice(
 
         $("resultPrice")
             .textContent =
-
             Number(
                 product.price || 0
             ).toLocaleString(
                 "ru-RU"
-            ) +
-            " ₸";
+            ) + " ₸";
 
 
         $("resultBarcode")
             .textContent =
-
             "Штрихкод: " +
             product.barcode;
 
@@ -1798,46 +1630,85 @@ async function checkPrice(
 
 
         showStatus(
-
             $("customerStatus"),
-
             "Товар найден.",
-
             "success"
-
         );
 
     }
-
     catch (error) {
 
         showStatus(
-
             $("customerStatus"),
-
-            getFirebaseError(
-                error
-            ),
-
+            firebaseErrorMessage(error),
             "error"
-
         );
 
     }
+}
+
+
+/* =========================================================
+   CAMERA PERMISSION
+========================================================= */
+
+async function requestCamera() {
+
+    if (
+        !navigator.mediaDevices ||
+        !navigator.mediaDevices.getUserMedia
+    ) {
+
+        throw new Error(
+            "Этот браузер не поддерживает доступ к камере."
+        );
+    }
+
+
+    const stream =
+        await navigator.mediaDevices.getUserMedia({
+
+            video: {
+                facingMode: {
+                    ideal: "environment"
+                }
+            },
+
+            audio: false
+
+        });
+
+
+    /*
+       Сразу останавливаем этот поток.
+       ZXing потом откроет камеру самостоятельно.
+    */
+
+    stream
+        .getTracks()
+        .forEach(
+            track => track.stop()
+        );
 
 }
 
 
-/* =====================================================
-   START CAMERA
-===================================================== */
+/* =========================================================
+   START SCANNER
+========================================================= */
 
 async function startScanner(
     mode
 ) {
 
-    scannerMode =
-        mode;
+    if (scannerBusy) {
+        return;
+    }
+
+
+    scannerBusy = true;
+
+    scannerMode = mode;
 
 
     $("scanner")
@@ -1847,6 +1718,13 @@ async function startScanner(
 
     try {
 
+        /*
+           Сначала получаем разрешение
+           iPhone на камеру.
+        */
+
+        await requestCamera();
+
 
         if (
             typeof ZXingBrowser ===
@@ -1854,114 +1732,101 @@ async function startScanner(
         ) {
 
             throw new Error(
-                "ZXing library not loaded"
+                "Сканер штрихкодов не загрузился. Проверьте интернет."
             );
 
         }
 
 
-        if (
-            !scannerReader
-        ) {
-
-            scannerReader =
-                new ZXingBrowser
-                    .BrowserMultiFormatReader();
-
-        }
+        scannerReader =
+            new ZXingBrowser.BrowserMultiFormatReader();
 
 
         scannerControls =
+            await scannerReader.decodeFromConstraints(
 
-            await scannerReader
-                .decodeFromConstraints(
-
-                    {
-
-                        video: {
-
-                            facingMode:
-                            {
-                                ideal:
-                                "environment"
-                            }
-
+                {
+                    video: {
+                        facingMode: {
+                            ideal: "environment"
                         }
+                    }
+                },
 
-                    },
+                $("scannerVideo"),
 
+                async (
+                    result,
+                    error
+                ) => {
 
-                    $("scannerVideo"),
-
-
-                    async (
-                        result
-                    ) => {
-
-
-                        if (!result) {
-
-                            return;
-
-                        }
+                    if (!result) {
+                        return;
+                    }
 
 
-                        const barcode =
-                            result.getText();
+                    if (scannerBusy !== true) {
+                        return;
+                    }
 
 
-                        closeScanner();
+                    scannerBusy = false;
 
 
-                        if (
-                            scannerMode ===
-                            "customer"
-                        ) {
+                    const barcode =
+                        normalizeBarcode(
+                            result.getText()
+                        );
 
 
-                            $("manualBarcode")
-                                .value =
-                                barcode;
+                    closeScanner();
 
 
-                            await checkPrice(
-                                barcode
-                            );
+                    if (!barcode) {
+                        return;
+                    }
 
 
-                        }
+                    if (
+                        scannerMode ===
+                        "customer"
+                    ) {
+
+                        $("manualBarcode")
+                            .value =
+                            barcode;
 
 
-                        if (
-                            scannerMode ===
-                            "admin"
-                        ) {
-
-
-                            $("productBarcode")
-                                .value =
-                                barcode;
-
-
-                            showStatus(
-
-                                $("saveStatus"),
-
-                                "Штрихкод отсканирован.",
-
-                                "success"
-
-                            );
-
-                        }
+                        await checkPrice(
+                            barcode
+                        );
 
                     }
 
-                );
 
+                    if (
+                        scannerMode ===
+                        "admin"
+                    ) {
+
+                        $("productBarcode")
+                            .value =
+                            barcode;
+
+
+                        showStatus(
+                            $("saveStatus"),
+                            "Штрихкод получен: " +
+                            barcode,
+                            "success"
+                        );
+
+                    }
+
+                }
+            );
 
     }
-
     catch (error) {
 
         console.error(
@@ -1973,54 +1838,89 @@ async function startScanner(
         closeScanner();
 
 
-        alert(
-            "Не удалось открыть камеру.\n\n" +
-            "Разрешите доступ к камере в Safari.\n\n" +
-            "GitHub Pages должен открываться через HTTPS."
-        );
+        let message =
+            "Не удалось открыть камеру.";
+
+
+        if (
+            error?.name ===
+            "NotAllowedError"
+        ) {
+
+            message =
+                "Доступ к камере запрещён.\n\n" +
+                "На iPhone откройте Настройки → Safari → Камера → Разрешить.";
+
+        }
+        else if (
+            error?.name ===
+            "NotFoundError"
+        ) {
+
+            message =
+                "Камера на устройстве не найдена.";
+
+        }
+        else if (
+            location.protocol !==
+            "https:"
+        ) {
+
+            message =
+                "Камера требует HTTPS.\n\n" +
+                "Открывайте сайт через GitHub Pages: https://rafet08.github.io";
+
+        }
+        else if (
+            error?.message
+        ) {
+
+            message =
+                "Ошибка камеры:\n" +
+                error.message;
+
+        }
+
+
+        alert(message);
 
     }
+    finally {
 
+        scannerBusy = false;
+
+    }
 }
 
 
-/* =====================================================
-   CLOSE CAMERA
-===================================================== */
+/* =========================================================
+   CLOSE SCANNER
+========================================================= */
 
 function closeScanner() {
 
+    scannerBusy = false;
 
-    if (
-        scannerControls
-    ) {
+
+    if (scannerControls) {
 
         try {
-
             scannerControls.stop();
-
         }
-
         catch (e) {}
 
-        scannerControls =
-            null;
-
+        scannerControls = null;
     }
 
 
-    if (
-        scannerReader
-    ) {
+    if (scannerReader) {
 
         try {
-
             scannerReader.reset();
-
         }
-
         catch (e) {}
 
+        scannerReader = null;
     }
 
 
@@ -2028,113 +1928,81 @@ function closeScanner() {
         $("scannerVideo");
 
 
-    if (
-        video.srcObject
-    ) {
+    if (video.srcObject) {
 
         video.srcObject
             .getTracks()
             .forEach(
-                track =>
-                    track.stop()
+                track => track.stop()
             );
 
-
-        video.srcObject =
-            null;
-
+        video.srcObject = null;
     }
 
 
     $("scanner")
         .classList
         .remove("show");
-
 }
 
 
-/* =====================================================
-   CUSTOMER SCAN BUTTON
-===================================================== */
+/* =========================================================
+   CUSTOMER SCANNER
+========================================================= */
 
 $("scanCustomerButton")
     .addEventListener(
-
         "click",
-
         () => {
-
-            startScanner(
-                "customer"
-            );
-
+            startScanner("customer");
         }
-
     );
 
 
-/* =====================================================
-   ADMIN SCAN BUTTON
-===================================================== */
+/* =========================================================
+   ADMIN SCANNER
+========================================================= */
 
 $("scanAdminButton")
     .addEventListener(
-
         "click",
-
         () => {
-
-            startScanner(
-                "admin"
-            );
-
+            startScanner("admin");
         }
-
     );
 
 
-/* =====================================================
+/* =========================================================
    CLOSE CAMERA
-===================================================== */
+========================================================= */
 
 $("closeScanner")
     .addEventListener(
-
         "click",
-
         closeScanner
-
     );
 
 
-/* =====================================================
-   MANUAL BARCODE
-===================================================== */
+/* =========================================================
+   MANUAL SEARCH
+========================================================= */
 
 $("manualCheckButton")
     .addEventListener(
-
         "click",
-
         () => {
 
             checkPrice(
-
-                $("manualBarcode")
-                    .value
-
+                $("manualBarcode").value
             );
 
         }
-
     );
 
 
 $("manualBarcode")
     .addEventListener(
-
         "keydown",
-
         event => {
 
             if (
@@ -2143,80 +2011,65 @@ $("manualBarcode")
             ) {
 
                 checkPrice(
-
-                    $("manualBarcode")
-                        .value
-
+                    $("manualBarcode").value
                 );
 
             }
 
         }
-
     );
 
 
-/* =====================================================
+/* =========================================================
    OPEN ADMIN
-===================================================== */
+========================================================= */
 
 $("openAdmin")
     .addEventListener(
-
         "click",
-
         () => {
 
             $("customerPage")
                 .classList
                 .add("hidden");
 
-
             $("adminPage")
                 .classList
                 .add("show");
 
         }
-
     );
 
 
-/* =====================================================
+/* =========================================================
    BACK
-===================================================== */
+========================================================= */
 
 $("backButton")
     .addEventListener(
-
         "click",
-
         () => {
 
             $("adminPage")
                 .classList
                 .remove("show");
 
-
             $("customerPage")
                 .classList
                 .remove("hidden");
 
         }
-
     );
 
 
-/* =====================================================
+/* =========================================================
    LOGIN
-===================================================== */
+========================================================= */
 
 $("loginButton")
     .addEventListener(
-
         "click",
-
         async () => {
-
 
             const email =
                 $("email")
@@ -2229,165 +2082,113 @@ $("loginButton")
                     .value;
 
 
-            if (
-                !email
-            ) {
+            if (!email) {
 
                 showStatus(
-
                     $("loginStatus"),
-
                     "Введите Gmail.",
-
                     "error"
-
                 );
 
                 return;
-
             }
 
 
-            if (
-                !password
-            ) {
+            if (!password) {
 
                 showStatus(
-
                     $("loginStatus"),
-
-                    "Введите пароль Firebase.",
-
+                    "Введите пароль.",
                     "error"
-
                 );
 
                 return;
-
             }
 
 
             try {
 
-
                 $("loginButton")
-                    .disabled =
-                    true;
+                    .disabled = true;
 
 
                 $("loginButton")
                     .innerHTML =
-
                     '<span class="spinner"></span> Вход...';
 
 
                 await signInWithEmailAndPassword(
-
                     auth,
-
                     email,
-
                     password
-
                 );
 
 
                 showStatus(
-
                     $("loginStatus"),
-
-                    "Вход выполнен успешно.",
-
+                    "Вход выполнен.",
                     "success"
-
                 );
 
-
             }
-
             catch (error) {
 
-
                 showStatus(
-
                     $("loginStatus"),
-
-                    getFirebaseError(
-                        error
-                    ),
-
+                    firebaseErrorMessage(error),
                     "error"
-
                 );
 
             }
-
             finally {
 
+                $("loginButton")
+                    .disabled = false;
 
                 $("loginButton")
-                    .disabled =
-                    false;
-
-
-                $("loginButton")
-                    .textContent =
-                    "Войти";
+                    .textContent = "Войти";
 
             }
 
         }
-
     );
 
 
-/* =====================================================
+/* =========================================================
    LOGOUT
-===================================================== */
+========================================================= */
 
 $("logoutButton")
     .addEventListener(
-
         "click",
-
         async () => {
 
             try {
 
-                await signOut(
-                    auth
-                );
+                await signOut(auth);
 
             }
-
             catch (error) {
 
                 alert(
-                    getFirebaseError(
-                        error
-                    )
+                    firebaseErrorMessage(error)
                 );
 
             }
 
         }
-
     );
 
 
-/* =====================================================
+/* =========================================================
    AUTH STATE
-===================================================== */
+========================================================= */
 
 onAuthStateChanged(
-
     auth,
-
     user => {
 
-
         if (user) {
-
 
             $("loginCard")
                 .classList
@@ -2402,16 +2203,13 @@ onAuthStateChanged(
             $("adminEmail")
                 .textContent =
                 user.email ||
-                "Администратор";
+                "";
 
 
-            loadProducts();
-
+            startProductsListener();
 
         }
-
         else {
-
 
             $("loginCard")
                 .classList
@@ -2423,29 +2221,33 @@ onAuthStateChanged(
                 .add("hidden");
 
 
+            if (productsListener) {
+
+                productsListener();
+
+                productsListener = null;
+
+            }
+
         }
 
     }
-
 );
 
 
-/* =====================================================
+/* =========================================================
    SAVE PRODUCT
-===================================================== */
+========================================================= */
 
 $("saveProductButton")
     .addEventListener(
-
         "click",
-
         async () => {
 
-
             const barcode =
-                $("productBarcode")
-                    .value
-                    .trim();
+                normalizeBarcode(
+                    $("productBarcode").value
+                );
 
 
             const name =
@@ -2454,82 +2256,71 @@ $("saveProductButton")
                     .trim();
 
 
+            const priceText =
+                $("productPrice")
+                    .value
+                    .trim();
+
+
             const price =
-                Number(
-                    $("productPrice")
-                        .value
-                );
+                Number(priceText);
 
 
             if (!barcode) {
 
                 showStatus(
-
                     $("saveStatus"),
-
                     "Введите или отсканируйте штрихкод.",
-
                     "error"
-
                 );
 
                 return;
-
             }
 
 
             if (!name) {
 
                 showStatus(
-
                     $("saveStatus"),
-
                     "Введите название товара.",
-
                     "error"
-
                 );
 
                 return;
-
             }
 
 
             if (
-                !Number.isFinite(
-                    price
-                ) ||
+                priceText === "" ||
+                !Number.isFinite(price) ||
                 price < 0
             ) {
 
                 showStatus(
-
                     $("saveStatus"),
-
                     "Введите правильную цену.",
-
                     "error"
-
                 );
 
                 return;
-
             }
 
 
             try {
 
-
                 $("saveProductButton")
-                    .disabled =
-                    true;
+                    .disabled = true;
 
 
                 $("saveProductButton")
                     .innerHTML =
-
                     '<span class="spinner"></span> Сохранение...';
 
+
+                /*
+                   Проверяем существует ли
+                   такой штрихкод.
+                */
 
                 const existing =
                     await findProduct(
@@ -2537,25 +2328,22 @@ $("saveProductButton")
                     );
 
 
-                if (
-                    existing
-                ) {
+                if (existing) {
 
+                    /*
+                       Товар уже есть.
+                       Обновляем.
+                    */
 
-                    await updateDoc(
+                    await update(
 
-                        doc(
-
+                        ref(
                             db,
-
-                            "products",
-
+                            "products/" +
                             existing.id
-
                         ),
 
                         {
-
                             barcode:
                                 barcode,
 
@@ -2567,34 +2355,31 @@ $("saveProductButton")
 
                             updatedAt:
                                 Date.now()
-
                         }
 
                     );
 
 
                     showStatus(
-
                         $("saveStatus"),
-
-                        "Товар уже существовал. Цена и название обновлены.",
-
+                        "Товар уже был в базе. Цена и название обновлены.",
                         "success"
-
                     );
 
-
                 }
-
                 else {
 
+                    /*
+                       Создаём новый ID.
+                    */
 
-                    await addDoc(
+                    const newProductRef =
+                        push(productsRef);
 
-                        productsRef,
 
+                    await set(
+                        newProductRef,
                         {
-
                             barcode:
                                 barcode,
 
@@ -2609,475 +2394,520 @@ $("saveProductButton")
 
                             updatedAt:
                                 Date.now()
-
                         }
-
                     );
 
 
                     showStatus(
-
                         $("saveStatus"),
-
-                        "Товар успешно добавлен в Firebase.",
-
+                        "Товар успешно сохранён в Firebase.",
                         "success"
-
                     );
 
                 }
 
 
-                $("productBarcode")
-                    .value =
-                    "";
+                /*
+                   Очищаем форму.
+                */
 
+                $("productBarcode")
+                    .value = "";
 
                 $("productName")
-                    .value =
-                    "";
-
+                    .value = "";
 
                 $("productPrice")
-                    .value =
-                    "";
-
+                    .value = "";
 
             }
-
             catch (error) {
 
-
                 showStatus(
-
                     $("saveStatus"),
-
-                    getFirebaseError(
-                        error
-                    ),
-
+                    firebaseErrorMessage(error),
                     "error"
-
                 );
 
             }
-
             finally {
 
-
                 $("saveProductButton")
-                    .disabled =
-                    false;
-
+                    .disabled = false;
 
                 $("saveProductButton")
                     .textContent =
-                    "➕ Добавить товар";
+                    "➕ Сохранить товар";
 
             }
 
         }
-
     );
 
 
-/* =====================================================
-   LOAD PRODUCTS
-===================================================== */
+/* =========================================================
+   LOAD PRODUCTS REALTIME
+========================================================= */
 
-function loadProducts() {
+function startProductsListener() {
 
+    if (productsListener) {
 
-    if (
-        productsListenerStarted
-    ) {
+        productsListener();
 
-        return;
+        productsListener = null;
 
     }
 
 
-    productsListenerStarted =
-        true;
-
-
-    const productsQuery =
-
-        query(
+    productsListener =
+        onValue(
 
             productsRef,
 
-            orderBy(
-                "name"
-            )
+            snapshot => {
 
-        );
-
-
-    onSnapshot(
-
-        productsQuery,
+                const list =
+                    $("productList");
 
 
-        snapshot => {
+                list.innerHTML = "";
 
 
-            const list =
-                $("productList");
+                if (!snapshot.exists()) {
+
+                    list.innerHTML =
+                        `
+                        <div class="description">
+                            В базе пока нет товаров.
+                        </div>
+                        `;
+
+                    return;
+                }
 
 
-            list.innerHTML =
-                "";
+                const data =
+                    snapshot.val() || {};
 
 
-            if (
-                snapshot.empty
-            ) {
+                const products = [];
 
 
-                list.innerHTML =
+                Object.keys(data)
+                    .forEach(
+                        id => {
 
-                    '<div class="description">' +
-                    'Товаров пока нет. Добавьте первый товар.' +
-                    '</div>';
+                            products.push({
 
-                return;
+                                id: id,
 
-            }
+                                ...data[id]
 
+                            });
 
-            snapshot.forEach(
-
-                documentSnapshot => {
-
-
-                    const product =
-                        documentSnapshot
-                            .data();
+                        }
+                    );
 
 
-                    const id =
-                        documentSnapshot.id;
+                products.sort(
+                    (a,b) =>
+                        String(
+                            a.name || ""
+                        ).localeCompare(
+                            String(
+                                b.name || ""
+                            ),
+                            "ru"
+                        )
+                );
 
 
-                    const item =
-                        document
-                            .createElement(
+                products.forEach(
+                    product => {
+
+                        const item =
+                            document.createElement(
                                 "div"
                             );
 
 
-                    item.className =
-                        "product-item";
+                        item.className =
+                            "product-item";
 
 
-                    item.innerHTML = `
-
-                        <div class="product-top">
-
-                            <div>
-
-                                <div
-                                    class="product-item-name">
-                                </div>
-
-                                <div
-                                    class="product-item-barcode">
-                                </div>
-
-                            </div>
-
-                            <div
-                                class="product-item-price">
-                            </div>
-
-                        </div>
+                        const top =
+                            document.createElement(
+                                "div"
+                            );
 
 
-                        <div
-                            class="product-actions">
-
-                            <button
-                                class="btn btn-light edit-button">
-
-                                ✏️ Изменить
-
-                            </button>
+                        top.className =
+                            "product-top";
 
 
-                            <button
-                                class="btn btn-red delete-button">
+                        const info =
+                            document.createElement(
+                                "div"
+                            );
 
-                                🗑️ Удалить
 
-                            </button>
+                        const name =
+                            document.createElement(
+                                "div"
+                            );
 
-                        </div>
 
+                        name.className =
+                            "product-item-name";
+
+
+                        name.textContent =
+                            product.name ||
+                            "Без названия";
+
+
+                        const barcode =
+                            document.createElement(
+                                "div"
+                            );
+
+
+                        barcode.className =
+                            "product-item-barcode";
+
+
+                        barcode.textContent =
+                            "Штрихкод: " +
+                            (
+                                product.barcode ||
+                                ""
+                            );
+
+
+                        info.appendChild(
+                            name
+                        );
+
+
+                        info.appendChild(
+                            barcode
+                        );
+
+
+                        const price =
+                            document.createElement(
+                                "div"
+                            );
+
+
+                        price.className =
+                            "product-item-price";
+
+
+                        price.textContent =
+                            Number(
+                                product.price || 0
+                            ).toLocaleString(
+                                "ru-RU"
+                            ) +
+                            " ₸";
+
+
+                        top.appendChild(
+                            info
+                        );
+
+
+                        top.appendChild(
+                            price
+                        );
+
+
+                        const actions =
+                            document.createElement(
+                                "div"
+                            );
+
+
+                        actions.className =
+                            "product-actions";
+
+
+                        const edit =
+                            document.createElement(
+                                "button"
+                            );
+
+
+                        edit.className =
+                            "btn btn-light";
+
+
+                        edit.textContent =
+                            "✏️ Изменить";
+
+
+                        const remove =
+                            document.createElement(
+                                "button"
+                            );
+
+
+                        remove.className =
+                            "btn btn-red";
+
+
+                        remove.textContent =
+                            "🗑️ Удалить";
+
+
+                        actions.appendChild(
+                            edit
+                        );
+
+
+                        actions.appendChild(
+                            remove
+                        );
+
+
+                        item.appendChild(
+                            top
+                        );
+
+
+                        item.appendChild(
+                            actions
+                        );
+
+
+                        /* ==================================
+                           EDIT
+                        ================================== */
+
+                        edit.addEventListener(
+                            "click",
+                            async () => {
+
+                                const newName =
+                                    prompt(
+                                        "Название товара:",
+                                        product.name || ""
+                                    );
+
+
+                                if (
+                                    newName ===
+                                    null
+                                ) {
+                                    return;
+                                }
+
+
+                                const newPrice =
+                                    prompt(
+                                        "Цена в тенге:",
+                                        product.price || 0
+                                    );
+
+
+                                if (
+                                    newPrice ===
+                                    null
+                                ) {
+                                    return;
+                                }
+
+
+                                const cleanName =
+                                    newName.trim();
+
+
+                                const numericPrice =
+                                    Number(
+                                        newPrice
+                                    );
+
+
+                                if (
+                                    !cleanName ||
+                                    !Number.isFinite(
+                                        numericPrice
+                                    ) ||
+                                    numericPrice < 0
+                                ) {
+
+                                    alert(
+                                        "Неверное название или цена."
+                                    );
+
+                                    return;
+                                }
+
+
+                                try {
+
+                                    await update(
+
+                                        ref(
+                                            db,
+                                            "products/" +
+                                            product.id
+                                        ),
+
+                                        {
+                                            name:
+                                                cleanName,
+
+                                            price:
+                                                numericPrice,
+
+                                            updatedAt:
+                                                Date.now()
+                                        }
+
+                                    );
+
+                                }
+                                catch (error) {
+
+                                    alert(
+                                        firebaseErrorMessage(
+                                            error
+                                        )
+                                    );
+
+                                }
+
+                            }
+                        );
+
+
+                        /* ==================================
+                           DELETE
+                        ================================== */
+
+                        remove.addEventListener(
+                            "click",
+                            async () => {
+
+                                const confirmed =
+                                    confirm(
+                                        "Удалить товар «" +
+                                        (
+                                            product.name ||
+                                            ""
+                                        ) +
+                                        "»?"
+                                    );
+
+
+                                if (!confirmed) {
+                                    return;
+                                }
+
+
+                                try {
+
+                                    await removeProduct(
+                                        product.id
+                                    );
+
+                                }
+                                catch (error) {
+
+                                    alert(
+                                        firebaseErrorMessage(
+                                            error
+                                        )
+                                    );
+
+                                }
+
+                            }
+                        );
+
+
+                        list.appendChild(
+                            item
+                        );
+
+                    }
+                );
+
+            },
+
+            error => {
+
+                console.error(
+                    "Realtime Database error:",
+                    error
+                );
+
+
+                $("productList")
+                    .innerHTML =
+                    `
+                    <div class="status show error">
+                        ${escapeHtml(
+                            firebaseErrorMessage(error)
+                        )}
+                    </div>
                     `;
 
+            }
 
-                    item.querySelector(
-                        ".product-item-name"
-                    ).textContent =
-                        product.name ||
-                        "Без названия";
+        );
 
+}
 
-                    item.querySelector(
-                        ".product-item-barcode"
-                    ).textContent =
-                        product.barcode ||
-                        "";
 
+/* =========================================================
+   REMOVE PRODUCT
+========================================================= */
 
-                    item.querySelector(
-                        ".product-item-price"
-                    ).textContent =
+async function removeProduct(id) {
 
-                        Number(
-                            product.price ||
-                            0
-                        ).toLocaleString(
-                            "ru-RU"
-                        ) +
-                        " ₸";
-
-
-                    /* EDIT */
-
-                    item.querySelector(
-                        ".edit-button"
-                    ).addEventListener(
-
-                        "click",
-
-                        async () => {
-
-
-                            const newName =
-                                prompt(
-
-                                    "Название товара:",
-
-                                    product.name ||
-                                    ""
-
-                                );
-
-
-                            if (
-                                newName ===
-                                null
-                            ) {
-
-                                return;
-
-                            }
-
-
-                            const newPrice =
-                                prompt(
-
-                                    "Цена, ₸:",
-
-                                    product.price ||
-                                    0
-
-                                );
-
-
-                            if (
-                                newPrice ===
-                                null
-                            ) {
-
-                                return;
-
-                            }
-
-
-                            const numericPrice =
-                                Number(
-                                    newPrice
-                                );
-
-
-                            if (
-                                !newName
-                                    .trim()
-                                ||
-                                !Number.isFinite(
-                                    numericPrice
-                                )
-                                ||
-                                numericPrice < 0
-                            ) {
-
-                                alert(
-                                    "Неверное название или цена."
-                                );
-
-                                return;
-
-                            }
-
-
-                            try {
-
-
-                                await updateDoc(
-
-                                    doc(
-
-                                        db,
-
-                                        "products",
-
-                                        id
-
-                                    ),
-
-                                    {
-
-                                        name:
-                                            newName
-                                                .trim(),
-
-                                        price:
-                                            numericPrice,
-
-                                        updatedAt:
-                                            Date.now()
-
-                                    }
-
-                                );
-
-
-                                alert(
-                                    "Товар обновлён."
-                                );
-
-
-                            }
-
-                            catch (error) {
-
-                                alert(
-                                    getFirebaseError(
-                                        error
-                                    )
-                                );
-
-                            }
-
-                        }
-
-                    );
-
-
-                    /* DELETE */
-
-                    item.querySelector(
-                        ".delete-button"
-                    ).addEventListener(
-
-                        "click",
-
-                        async () => {
-
-
-                            const confirmed =
-                                confirm(
-
-                                    "Удалить товар «" +
-                                    (
-                                        product.name ||
-                                        ""
-                                    ) +
-                                    "»?"
-
-                                );
-
-
-                            if (
-                                !confirmed
-                            ) {
-
-                                return;
-
-                            }
-
-
-                            try {
-
-
-                                await deleteDoc(
-
-                                    doc(
-
-                                        db,
-
-                                        "products",
-
-                                        id
-
-                                    )
-
-                                );
-
-
-                            }
-
-                            catch (error) {
-
-                                alert(
-                                    getFirebaseError(
-                                        error
-                                    )
-                                );
-
-                            }
-
-                        }
-
-                    );
-
-
-                    list.appendChild(
-                        item
-                    );
-
-                }
-
-            );
-
-        },
-
-
-        error => {
-
-
-            console.error(
-                "Firestore error:",
-                error
-            );
-
-
-            $("productList")
-                .innerHTML =
-
-                '<div class="status show error">' +
-                getFirebaseError(error) +
-                '</div>';
-
-        }
-
+    await remove(
+        ref(
+            db,
+            "products/" + id
+        )
     );
 
 }
 
+
+/* =========================================================
+   ESCAPE HTML
+========================================================= */
+
+function escapeHtml(value) {
+
+    return String(value || "")
+        .replace(
+            /&/g,
+            "&amp;"
+        )
+        .replace(
+            /</g,
+            "&lt;"
+        )
+        .replace(
+            />/g,
+            "&gt;"
+        )
+        .replace(
+            /"/g,
+            "&quot;"
+        )
+        .replace(
+            /'/g,
+            "&#039;"
+        );
+
+}
 
 </script>
 
